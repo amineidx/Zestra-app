@@ -20,6 +20,8 @@ import {
   MoreHorizontal
 } from 'lucide-react'
 import { toast } from 'sonner'
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 
 const SUGGESTED_PROMPTS = [
   { label: 'Compute estimated tax', text: 'Compute my estimated tax' },
@@ -75,9 +77,17 @@ export function AIAssistant({ conversationId }: AIAssistantProps) {
 
   const isLoading = status === 'submitted' || status === 'streaming'
 
-  // Load existing conversation messages
+  // Sync conversationId prop to local state
   useEffect(() => {
-    if (!conversationId) return
+    setCurrentConvId(conversationId || null)
+  }, [conversationId])
+
+  // Load existing conversation messages or clear them for a new conversation
+  useEffect(() => {
+    if (!conversationId) {
+      setMessages([])
+      return
+    }
     fetch(`/api/conversations/${conversationId}`)
       .then(r => r.ok ? r.json() : null)
       .then(data => {
@@ -88,9 +98,13 @@ export function AIAssistant({ conversationId }: AIAssistantProps) {
             parts: [{ type: 'text', text: m.content }],
           }))
           setMessages(mapped)
+        } else {
+          setMessages([])
         }
       })
-      .catch(() => {})
+      .catch(() => {
+        setMessages([])
+      })
   }, [conversationId, setMessages])
 
   const handleSend = async (text: string) => {
@@ -309,8 +323,8 @@ export function AIAssistant({ conversationId }: AIAssistantProps) {
                               : 'text-foreground pt-1.5'
                           }`}
                         >
-                          <div className={`whitespace-pre-wrap ${message.role === 'user' ? 'text-[15px]' : 'prose max-w-none prose-headings:text-foreground prose-a:text-primary dark:prose-invert'}`}>
-                            {text}
+                          <div className={`whitespace-pre-wrap ${message.role === 'user' ? 'text-[15px]' : 'prose prose-sm max-w-none prose-headings:text-foreground prose-a:text-primary dark:prose-invert prose-p:leading-relaxed'}`}>
+                            {message.role === 'user' ? text : <ReactMarkdown remarkPlugins={[remarkGfm]}>{text}</ReactMarkdown>}
                           </div>
                         </div>
                       )}
