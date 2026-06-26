@@ -9,7 +9,7 @@ export const maxDuration = 30 // Set appropriate timeout for Vercel
 export async function POST(req: Request) {
   try {
     const google = createGoogleGenerativeAI({
-      apiKey: process.env.GEMINI_API_KEY,
+      apiKey: process.env.GEMINI_API_KEY || process.env.GOOGLE_GENERATIVE_AI_API_KEY,
     })
 
     const body = await req.json()
