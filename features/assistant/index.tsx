@@ -30,6 +30,15 @@ const SUGGESTED_PROMPTS = [
   { label: 'CASNOS deadline?', text: 'When is my next CASNOS deadline?' },
 ]
 
+
+const TypingIndicator = () => (
+  <div className="flex gap-1.5 items-center px-2 py-3">
+    <div className="w-2 h-2 rounded-full bg-gemini-gradient opacity-60 animate-bounce" style={{ animationDelay: '0ms' }}></div>
+    <div className="w-2 h-2 rounded-full bg-gemini-gradient opacity-60 animate-bounce" style={{ animationDelay: '150ms' }}></div>
+    <div className="w-2 h-2 rounded-full bg-gemini-gradient opacity-60 animate-bounce" style={{ animationDelay: '300ms' }}></div>
+  </div>
+)
+
 interface AIAssistantProps {
   conversationId?: string | null
 }
@@ -271,7 +280,7 @@ export function AIAssistant({ conversationId }: AIAssistantProps) {
       <div className="flex-1 overflow-y-auto w-full relative z-10 flex flex-col pt-14">
         {messages.length === 0 ? (
           /* Empty State */
-          <div className="max-w-3xl w-full mx-auto flex-1 flex flex-col justify-center items-center px-4 pb-20">
+          <div className="max-w-3xl w-full mx-auto flex-1 flex flex-col justify-center items-center px-4 pb-20 animate-in fade-in zoom-in-95 duration-700 ease-out">
             <h1 className="text-3xl md:text-4xl font-normal tracking-tight text-foreground mb-8 text-center">
               Hi {userName.split(' ')[0]}, let&apos;s get into it
             </h1>
@@ -295,7 +304,7 @@ export function AIAssistant({ conversationId }: AIAssistantProps) {
           </div>
         ) : (
           /* Messages Stream */
-          <div className="flex-1 w-full max-w-3xl mx-auto flex flex-col pb-6 px-4">
+          <div className="flex-1 w-full max-w-3xl mx-auto flex flex-col pb-6 px-4 animate-in fade-in slide-in-from-bottom-8 duration-700 ease-out">
             <div className="flex-1 space-y-8 py-8">
               {messages.map((message: any) => {
                 const text = getMessageText(message)
@@ -304,7 +313,7 @@ export function AIAssistant({ conversationId }: AIAssistantProps) {
                 return (
                   <div
                     key={message.id}
-                    className={`flex gap-4 text-[15px] leading-relaxed w-full ${
+                    className={`flex gap-4 text-[15px] leading-relaxed w-full animate-in fade-in slide-in-from-bottom-4 duration-500 ease-out ${
                       message.role === 'user' ? 'justify-end' : 'justify-start'
                     }`}
                   >
@@ -362,13 +371,12 @@ export function AIAssistant({ conversationId }: AIAssistantProps) {
               })}
 
               {isLoading && messages[messages.length - 1]?.role === 'user' && (
-                <div className="flex gap-4 items-start mt-8">
-                  <div className="h-9 w-9 rounded-full shrink-0 flex items-center justify-center border bg-gemini-gradient text-white animate-gemini-glow shadow-sm mt-1">
-                    <Sparkles className="h-4.5 w-4.5" />
+                <div className="flex gap-4 items-start animate-in fade-in slide-in-from-bottom-4 duration-500 ease-out">
+                  <div className="h-9 w-9 rounded-full shrink-0 flex items-center justify-center bg-gemini-gradient text-white animate-gemini-glow shadow-sm mt-1">
+                    <Sparkles className="h-5 w-5" />
                   </div>
-                  <div className="flex items-center gap-2 text-sm text-foreground p-2">
-                    <Loader2 className="h-4 w-4 animate-spin text-primary" />
-                    <span>Thinking...</span>
+                  <div className="flex items-center gap-2 text-sm text-foreground p-1">
+                    <TypingIndicator />
                   </div>
                 </div>
               )}
