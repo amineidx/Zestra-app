@@ -1,0 +1,130 @@
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Client {
+  id                     String        @id @default(uuid())
+  name                   String
+  email                  String?
+  phone                  String?
+  address                String?
+  nif                    String?       // Tax ID (Numéro d'Identification Fiscale)
+  autoEntrepreneurNumber String?       // Auto-entrepreneur card number
+  createdAt              DateTime      @default(now())
+  updatedAt              DateTime      @updatedAt
+  transactions           Transaction[]
+  invoices               Invoice[]
+}
+
+model Transaction {
+  id          String   @id @default(uuid())
+  date        DateTime @default(now())
+  description String
+  amount      Float
+  type        String   // "REVENUE" | "EXPENSE"
+  category    String
+  clientId    String?
+  client      Client?  @relation(fields: [clientId], references: [id], onDelete: SetNull)
+  isDeleted   Boolean  @default(false) // Soft delete support
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Invoice {
+  id            String        @id @default(uuid())
+  invoiceNumber String        @unique // e.g., "FAC-2026-0001"
+  date          DateTime      @default(now())
+  dueDate       DateTime
+  status        String        // "DRAFT" | "SENT" | "PAID" | "OVERDUE"
+  clientId      String
+  client        Client        @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  notes         String?
+  language      String        @default("FR") // "FR" | "AR" | "BILINGUAL"
+  isArabic      Boolean       @default(false) // RTL styling support
+  subtotal      Float
+  tax           Float         // VAT or specific tax if applicable
+  total         Float         // Total in DZD
+  items         InvoiceItem[]
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+}
+
+model InvoiceItem {
+  id          String   @id @default(uuid())
+  invoiceId   String
+  invoice     Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  description String
+  quantity    Int
+  unitPrice   Float
+  total       Float
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Document {
+  id           String   @id @default(uuid())
+  name         String
+  fileUrl      String
+  fileKey      String
+  ocrText      String?  @db.Text
+  isSearchable Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model KnowledgeArticle {
+  id        String   @id @default(uuid())
+  title     String
+  content   String   @db.Text
+  tags      String?  // Comma-separated tags
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Reminder {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  date        DateTime
+  isCompleted Boolean  @default(false)
+  type        String   // "TAX" | "CASNOS" | "RENEWAL" | "OTHER"
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Settings {
+  id                     String   @id @default("default") // Single record constraint
+  businessName           String   @default("Zestra User")
+  email                  String?
+  phone                  String?
+  address                String?
+  nif                    String?
+  autoEntrepreneurNumber String?
+  logoUrl                String?
+  signatureUrl           String?
+  geminiApiKey           String?
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+}
+
+model ChatHistory {
+  id        String   @id @default(uuid())
+  role      String   // "user" | "assistant"
+  content   String   @db.Text
+  createdAt DateTime @default(now())
+}
+
+model AIAction {
+  id         String   @id @default(uuid())
+  actionName String
+  parameters String   @db.Text // JSON string of parameters
+  status     String   // "COMPLETED" | "FAILED"
+  result     String?  @db.Text // JSON string of result
+  createdAt  DateTime @default(now())
+}

@@ -1,65 +1,152 @@
-import Image from "next/image";
+'use client'
+
+import React, { useState } from 'react'
+import { Dashboard } from '@/features/dashboard'
+import { Transactions } from '@/features/transactions'
+import { Invoices } from '@/features/invoices'
+import { Clients } from '@/features/clients'
+import { Analytics } from '@/features/analytics'
+import { Calendar } from '@/features/calendar'
+import { Documents } from '@/features/documents'
+import { Knowledge } from '@/features/knowledge'
+import { Settings } from '@/features/settings'
+import { AIAssistant } from '@/features/assistant'
+import { Sparkles, MessageSquare, ChevronLeft, ChevronRight, Landmark } from 'lucide-react'
+
+type TabType =
+  | 'dashboard'
+  | 'transactions'
+  | 'invoices'
+  | 'clients'
+  | 'analytics'
+  | 'calendar'
+  | 'documents'
+  | 'knowledge'
+  | 'settings'
 
 export default function Home() {
+  const [activeTab, setActiveTab] = useState<TabType>('dashboard')
+  const [isAssistantOpen, setIsAssistantOpen] = useState(true)
+
+  const renderActiveTab = () => {
+    switch (activeTab) {
+      case 'dashboard':
+        return <Dashboard onNavigate={(tab) => setActiveTab(tab as TabType)} />
+      case 'transactions':
+        return <Transactions />
+      case 'invoices':
+        return <Invoices />
+      case 'clients':
+        return <Clients />
+      case 'analytics':
+        return <Analytics />
+      case 'calendar':
+        return <Calendar />
+      case 'documents':
+        return <Documents />
+      case 'knowledge':
+        return <Knowledge />
+      case 'settings':
+        return <Settings />
+      default:
+        return <Dashboard onNavigate={(tab) => setActiveTab(tab as TabType)} />
+    }
+  }
+
+  const tabLabels: { key: TabType; label: string }[] = [
+    { key: 'dashboard', label: 'Dashboard' },
+    { key: 'transactions', label: 'Transactions' },
+    { key: 'invoices', label: 'Invoices' },
+    { key: 'clients', label: 'Clients (CRM)' },
+    { key: 'analytics', label: 'Analytics' },
+    { key: 'calendar', label: 'Calendar' },
+    { key: 'documents', label: 'Documents' },
+    { key: 'knowledge', label: 'Knowledge Base' },
+    { key: 'settings', label: 'Settings' },
+  ]
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="flex flex-col flex-1 h-screen overflow-hidden bg-canvas print:h-auto print:overflow-visible">
+      {/* Pinned Top Navigation Bar (Airtable top-nav spec: 64px, white canvas, ink type) */}
+      <header className="h-16 border-b border-hairline bg-canvas flex items-center justify-between px-6 shrink-0 print:hidden z-10">
+        <div className="flex items-center gap-8">
+          {/* Logo brand wordmark */}
+          <div className="flex items-center gap-2">
+            <span className="font-semibold text-xl tracking-tight text-ink">Zestra</span>
+            <span className="text-[10px] bg-signature-coral text-white font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded">
+              v1.0
+            </span>
+          </div>
+
+          {/* Navigation links (Quietly editorial layout) */}
+          <nav className="hidden lg:flex items-center gap-1">
+            {tabLabels.map((tab) => (
+              <button
+                key={tab.key}
+                onClick={() => setActiveTab(tab.key)}
+                className={`px-3 py-1.5 text-xs font-semibold tracking-tight uppercase rounded-md transition ${
+                  activeTab === tab.key
+                    ? 'bg-surface-soft text-ink'
+                    : 'text-muted-custom hover:text-ink hover:bg-surface-soft/40'
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </nav>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+
+        {/* Right Nav Options */}
+        <div className="flex items-center gap-3">
+          {/* Mobile Tab Select Dropdown */}
+          <div className="lg:hidden">
+            <select
+              value={activeTab}
+              onChange={(e) => setActiveTab(e.target.value as TabType)}
+              className="text-xs font-semibold uppercase bg-surface-soft border border-hairline text-ink rounded-md p-2 focus:outline-none"
+            >
+              {tabLabels.map((tab) => (
+                <option key={tab.key} value={tab.key}>
+                  {tab.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Collapsible Assistant Toggle Button */}
+          <button
+            onClick={() => setIsAssistantOpen(!isAssistantOpen)}
+            className={`h-10 px-4 rounded-lg text-xs font-semibold uppercase flex items-center gap-2 border transition ${
+              isAssistantOpen
+                ? 'bg-signature-cream text-ink border-signature-cream hover:bg-signature-cream/80'
+                : 'bg-canvas text-ink border-hairline hover:bg-surface-soft'
+            }`}
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+            <MessageSquare className="h-4 w-4" />
+            <span>AI Co-Pilot</span>
+            {isAssistantOpen ? (
+              <ChevronRight className="h-3.5 w-3.5" />
+            ) : (
+              <ChevronLeft className="h-3.5 w-3.5" />
+            )}
+          </button>
         </div>
-      </main>
+      </header>
+
+      {/* Main Workspace Frame */}
+      <div className="flex flex-1 overflow-hidden print:overflow-visible print:block">
+        {/* Left Side: Active Panel (Scrollable content) */}
+        <main className="flex-1 overflow-y-auto print:overflow-visible print:block">
+          <div className="min-h-full pb-16">{renderActiveTab()}</div>
+        </main>
+
+        {/* Right Side: Collapsible AI Assistant Sidepanel */}
+        {isAssistantOpen && (
+          <aside className="print:hidden">
+            <AIAssistant />
+          </aside>
+        )}
+      </div>
     </div>
-  );
+  )
 }
