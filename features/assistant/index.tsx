@@ -64,19 +64,18 @@ export function AIAssistant({ conversationId }: AIAssistantProps) {
   // Local state to track the conversation ID if one is created during a "New" session
   const [currentConvId, setCurrentConvId] = useState<string | null>(conversationId || null)
 
+  // Fully local input state — decoupled from useChat to prevent typing bugs
+  const [localInput, setLocalInput] = useState('')
+
   const {
     messages,
-    input,
-    handleInputChange,
-    handleSubmit,
-    setInput,
     isLoading,
     error,
     append,
   } = useChat({
     api: '/api/chat',
     id: currentConvId || undefined,
-    body: { conversationId: currentConvId }, // Pass currentConvId to the API
+    body: { conversationId: currentConvId },
     initialMessages: conversationData?.messages?.map((m: any) => ({
       id: m.id,
       role: m.role,
@@ -86,7 +85,6 @@ export function AIAssistant({ conversationId }: AIAssistantProps) {
       const newId = response.headers.get('x-conversation-id')
       if (newId && !currentConvId) {
         setCurrentConvId(newId)
-        // Note: queryClient.invalidateQueries() will run onFinish, which updates the sidebar
       }
     },
     onFinish: () => {
@@ -97,6 +95,14 @@ export function AIAssistant({ conversationId }: AIAssistantProps) {
       toast.error(`Assistant error: ${err.message}`)
     },
   } as any) as any
+
+  const handleLocalSubmit = (e?: React.FormEvent) => {
+    if (e) e.preventDefault()
+    const trimmed = localInput.trim()
+    if (!trimmed || isLoading) return
+    append({ role: 'user', content: trimmed })
+    setLocalInput('')
+  }
 
   const handleSuggestionClick = (text: string) => {
     append({ role: 'user', content: text })
@@ -150,7 +156,7 @@ export function AIAssistant({ conversationId }: AIAssistantProps) {
 
   // The chat form which we render in different places depending on message state
   const renderChatForm = () => (
-    <form onSubmit={(e) => { e.preventDefault(); handleSubmit(e); }} className="relative flex flex-col w-full">
+    <form onSubmit={handleLocalSubmit} className="relative flex flex-col w-full">
       {/* Pill Container */}
       <div className="flex items-center w-full bg-accent/60 dark:bg-card border border-border/80 hover:border-gemini-purple focus-within:border-gemini-blue focus-within:ring-1 focus-within:ring-gemini-blue/30 rounded-full pl-5 pr-2 py-2 transition-all duration-300 shadow-sm gap-2">
         <button
@@ -167,17 +173,18 @@ export function AIAssistant({ conversationId }: AIAssistantProps) {
           onChange={handleFileUpload}
         />
 
-        {/* Replaced <Input> with standard <input> to fix "doesnt write anything" bug if it was caused by custom component */}
         <input
-          value={input || ''}
-          onChange={(e) => setInput(e.target.value)}
+          value={localInput}
+          onChange={(e) => setLocalInput(e.target.value)}
+          onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleLocalSubmit(); } }}
           placeholder="Ask Gemini"
           className="flex-1 text-sm md:text-base border-none focus:outline-none focus:ring-0 bg-transparent h-12 px-1 text-foreground placeholder:text-muted-foreground/60 w-full"
           disabled={isLoading}
+          autoComplete="off"
         />
 
-        {/* Submit Button - Replaced mic with Go button */}
-        {(input || '').trim() && (
+        {/* Submit Button */}
+        {localInput.trim() && (
           <Button
             type="submit"
             disabled={isLoading}
