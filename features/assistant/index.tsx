@@ -192,7 +192,7 @@ export function AIAssistant() {
       <form onSubmit={handleSubmit} className="p-4 border-t border-hairline bg-canvas">
         <div className="flex gap-2">
           <Input
-            value={input}
+            value={input || ''}
             onChange={handleInputChange}
             placeholder="Ask AI to create invoice, add client, log tax..."
             className="flex-1 text-sm bg-canvas border-hairline focus-visible:border-ink h-11"
@@ -201,7 +201,7 @@ export function AIAssistant() {
           <Button
             type="submit"
             className="h-11 px-5 bg-primary text-primary-foreground hover:bg-primary-active rounded-md transition font-medium text-sm"
-            disabled={isLoading || !input.trim()}
+            disabled={isLoading || !(input || '').trim()}
           >
             {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Send'}
           </Button>
