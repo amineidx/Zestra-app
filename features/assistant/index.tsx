@@ -42,8 +42,13 @@ const TypingIndicator = () => (
 interface AIAssistantProps {
   conversationId?: string | null
 }
-
-export function AIAssistant({ conversationId }: AIAssistantProps) {
+export function AIAssistant({ 
+  conversationId,
+  onConversationCreated
+}: { 
+  conversationId: string | null
+  onConversationCreated?: (id: string) => void
+}) {
   const queryClient = useQueryClient()
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -76,8 +81,19 @@ export function AIAssistant({ conversationId }: AIAssistantProps) {
   } = useChat({
     id: currentConvId || undefined,
     transport,
-    onFinish: () => {
-      queryClient.invalidateQueries()
+    onFinish: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['conversations'] })
+      if (!currentConvId && onConversationCreated) {
+        try {
+          const res = await fetch('/api/conversations')
+          if (res.ok) {
+            const data = await res.json()
+            if (data && data.length > 0) {
+              onConversationCreated(data[0].id)
+            }
+          }
+        } catch (e) {}
+      }
     },
     onError: (err: any) => {
       toast.error(`Assistant error: ${err?.message || 'Unknown error'}`)
@@ -121,7 +137,7 @@ export function AIAssistant({ conversationId }: AIAssistantProps) {
     if (!trimmed || isLoading) return
     setLocalInput('')
     try {
-      await sendMessage({ text: trimmed })
+      await sendMessage({ parts: [{ type: 'text', text: trimmed }] })
       queryClient.invalidateQueries({ queryKey: ['conversations'] })
     } catch (err: any) {
       toast.error(`Failed to send: ${err?.message || 'Unknown error'}`)

@@ -255,7 +255,11 @@ Algerian Auto Entrepreneur Tax:
       }
     })
 
-    return result.toUIMessageStreamResponse()
+    return result.toUIMessageStreamResponse({
+      headers: {
+        'x-conversation-id': activeConversationId || '',
+      }
+    })
   } catch (error: any) {
     console.error('Chat API Error:', error)
     return new Response(JSON.stringify({ error: error.message }), {

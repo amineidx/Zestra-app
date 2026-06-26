@@ -93,7 +93,7 @@ export default function Home() {
   const renderActiveTab = () => {
     switch (activeTab) {
       case 'assistant':
-        return <AIAssistant key={activeConversationId || 'new'} conversationId={activeConversationId} />
+        return <AIAssistant key={activeConversationId || 'new'} conversationId={activeConversationId} onConversationCreated={handleSelectConversation} />
       case 'dashboard':
         return <Dashboard onNavigate={(tab) => setActiveTab(tab as TabType)} />
       case 'transactions':
@@ -113,7 +113,7 @@ export default function Home() {
       case 'settings':
         return <Settings />
       default:
-        return <AIAssistant key={activeConversationId || 'new'} conversationId={activeConversationId} />
+        return <AIAssistant key={activeConversationId || 'new'} conversationId={activeConversationId} onConversationCreated={handleSelectConversation} />
     }
   }
 
