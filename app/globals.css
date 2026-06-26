@@ -102,33 +102,33 @@
 }
 
 .dark {
-  --background: #181d26;
-  --foreground: #ffffff;
-  --card: #1d1f25;
-  --card-foreground: #ffffff;
-  --popover: #1d1f25;
-  --popover-foreground: #ffffff;
+  --background: #131314;
+  --foreground: #e3e3e3;
+  --card: #1e1f20;
+  --card-foreground: #e3e3e3;
+  --popover: #1e1f20;
+  --popover-foreground: #e3e3e3;
   --primary: #ffffff;
-  --primary-foreground: #181d26;
-  --secondary: #1d1f25;
-  --secondary-foreground: #ffffff;
-  --muted: #1d1f25;
-  --muted-foreground: #9297a0;
-  --accent: #1d1f25;
+  --primary-foreground: #131314;
+  --secondary: #1e1f20;
+  --secondary-foreground: #e3e3e3;
+  --muted: #1e1f20;
+  --muted-foreground: #9eb0c4;
+  --accent: #2f3032;
   --accent-foreground: #ffffff;
-  --destructive: #fcab79;
-  --border: #333840;
-  --input: #333840;
-  --ring: #1b61c9;
+  --destructive: #f06292;
+  --border: #2f3032;
+  --input: #2f3032;
+  --ring: #4285f4;
   
-  --sidebar: #1d1f25;
-  --sidebar-foreground: #e0e2e6;
+  --sidebar: #1e1f20;
+  --sidebar-foreground: #c4c7c5;
   --sidebar-primary: #ffffff;
-  --sidebar-primary-foreground: #181d26;
-  --sidebar-accent: #333840;
+  --sidebar-primary-foreground: #131314;
+  --sidebar-accent: #2f3032;
   --sidebar-accent-foreground: #ffffff;
-  --sidebar-border: #333840;
-  --sidebar-ring: #1b61c9;
+  --sidebar-border: #2f3032;
+  --sidebar-ring: #4285f4;
 }
 
 @layer base {
@@ -144,4 +144,32 @@
 /* Custom RTL styling helper for bilingual support */
 [dir="rtl"] {
   text-align: right;
+}
+
+/* Gemini design system gradient utilities */
+@utility bg-gemini-gradient {
+  background-image: linear-gradient(135deg, #4285f4 0%, #9b72f8 50%, #f06292 100%);
+}
+
+@utility text-gemini-gradient {
+  background-image: linear-gradient(to right, #4285f4, #9b72f8, #f06292);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+@utility animate-gemini-glow {
+  background: linear-gradient(270deg, #4285f4, #9b72f8, #f06292, #4285f4);
+  background-size: 800% 800%;
+  animation: gemini-glow 12s ease infinite;
+}
+
+@utility border-gemini-gradient {
+  border-image: linear-gradient(to right, #4285f4, #9b72f8, #f06292) 1;
+}
+
+@keyframes gemini-glow {
+  0% { background-position: 0% 50% }
+  50% { background-position: 100% 50% }
+  100% { background-position: 0% 50% }
 }
