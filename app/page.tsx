@@ -47,6 +47,7 @@ type TabType =
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState<TabType>('assistant')
+  const [activeConversationId, setActiveConversationId] = useState<string | null>(null)
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(false)
   const [isMobileOpen, setIsMobileOpen] = useState(false)
   const { theme, setTheme } = useTheme()
@@ -64,15 +65,35 @@ export default function Home() {
 
   const userName = settings?.businessName || 'Auto Entrepreneur'
 
+  // Load Conversations
+  const { data: conversations } = useQuery({
+    queryKey: ['conversations'],
+    queryFn: async () => {
+      const res = await fetch('/api/conversations')
+      if (!res.ok) throw new Error('Failed to load conversations')
+      return res.json()
+    },
+  })
+
   // Avoid hydration mismatch
   useEffect(() => {
     setMounted(true)
   }, [])
 
+  const handleNewConversation = () => {
+    setActiveConversationId(null)
+    setActiveTab('assistant')
+  }
+
+  const handleSelectConversation = (id: string) => {
+    setActiveConversationId(id)
+    setActiveTab('assistant')
+  }
+
   const renderActiveTab = () => {
     switch (activeTab) {
       case 'assistant':
-        return <AIAssistant />
+        return <AIAssistant key={activeConversationId || 'new'} conversationId={activeConversationId} />
       case 'dashboard':
         return <Dashboard onNavigate={(tab) => setActiveTab(tab as TabType)} />
       case 'transactions':
@@ -92,12 +113,11 @@ export default function Home() {
       case 'settings':
         return <Settings />
       default:
-        return <AIAssistant />
+        return <AIAssistant key={activeConversationId || 'new'} conversationId={activeConversationId} />
     }
   }
 
   const navItems: { key: TabType; label: string; icon: React.ComponentType<any> }[] = [
-    { key: 'assistant', label: 'AI Co-Pilot', icon: Sparkles },
     { key: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { key: 'transactions', label: 'Transactions', icon: Receipt },
     { key: 'invoices', label: 'Invoices', icon: Printer },
@@ -147,7 +167,7 @@ export default function Home() {
           {/* New Chat quick button (Gemini style) */}
           {isSidebarExpanded ? (
             <button 
-              onClick={() => setActiveTab('assistant')}
+              onClick={handleNewConversation}
               className="w-full h-11 px-4 rounded-full bg-accent/60 hover:bg-accent text-xs font-semibold uppercase flex items-center justify-start gap-3 transition border border-border/40 text-foreground dark:text-foreground hover:scale-[1.01]"
             >
               <Plus className="h-4.5 w-4.5 text-gemini-purple" />
@@ -155,7 +175,7 @@ export default function Home() {
             </button>
           ) : (
             <button 
-              onClick={() => setActiveTab('assistant')}
+              onClick={handleNewConversation}
               className="w-10 h-10 mx-auto rounded-full bg-accent/60 hover:bg-accent flex items-center justify-center transition border border-border/40 text-foreground dark:text-foreground hover:scale-105"
               title="New Instruction"
             >
@@ -164,6 +184,26 @@ export default function Home() {
           )}
 
           <div className="h-4" />
+
+          {/* Conversations List */}
+          {conversations && conversations.length > 0 && isSidebarExpanded && (
+            <div className="mb-6 px-3">
+              <span className="text-[10px] font-bold tracking-wider text-muted-foreground uppercase mb-2 block">Recent chats</span>
+              <div className="space-y-0.5">
+                {conversations.slice(0, 5).map((conv: any) => (
+                  <button
+                    key={conv.id}
+                    onClick={() => handleSelectConversation(conv.id)}
+                    className={`w-full text-left text-xs truncate py-2 px-2 rounded-lg transition-colors ${
+                      activeConversationId === conv.id ? 'bg-accent text-foreground font-medium' : 'text-muted-foreground hover:bg-accent/40 hover:text-foreground'
+                    }`}
+                  >
+                    {conv.title}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
           {navItems.map((item) => {
             const Icon = item.icon
@@ -320,14 +360,22 @@ export default function Home() {
         )}
 
         {/* Mobile Viewport Content */}
-        <main className="flex-1 overflow-y-auto bg-background">
-          {renderActiveTab()}
+        <main className="flex-1 overflow-hidden bg-background flex flex-col">
+          {activeTab === 'assistant' ? renderActiveTab() : (
+            <div className="flex-1 overflow-y-auto w-full">
+              {renderActiveTab()}
+            </div>
+          )}
         </main>
       </div>
 
       {/* 3. DESKTOP WORKSPACE (lg viewports) */}
       <main className="hidden lg:flex flex-col flex-1 h-full overflow-hidden bg-background">
-        {renderActiveTab()}
+        {activeTab === 'assistant' ? renderActiveTab() : (
+          <div className="flex-1 overflow-y-auto w-full">
+            {renderActiveTab()}
+          </div>
+        )}
       </main>
 
     </div>

@@ -28,9 +28,14 @@ const SUGGESTED_PROMPTS = [
   { label: 'CASNOS deadline?', text: 'When is my next CASNOS deadline?' },
 ]
 
-export function AIAssistant() {
+interface AIAssistantProps {
+  conversationId?: string | null
+}
+
+export function AIAssistant({ conversationId }: AIAssistantProps) {
   const queryClient = useQueryClient()
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const [activeModel, setActiveModel] = useState('Flash')
   
   const { data: settings } = useQuery({
@@ -42,7 +47,22 @@ export function AIAssistant() {
     },
   })
 
+  // Fetch initial messages if we have a conversationId
+  const { data: conversationData } = useQuery({
+    queryKey: ['conversation', conversationId],
+    queryFn: async () => {
+      if (!conversationId) return { messages: [] }
+      const res = await fetch(`/api/conversations/${conversationId}`)
+      if (!res.ok) throw new Error('Failed to load conversation')
+      return res.json()
+    },
+    enabled: !!conversationId,
+  })
+
   const userName = settings?.businessName || 'Auto Entrepreneur'
+
+  // Local state to track the conversation ID if one is created during a "New" session
+  const [currentConvId, setCurrentConvId] = useState<string | null>(conversationId || null)
 
   const {
     messages,
@@ -55,6 +75,20 @@ export function AIAssistant() {
     append,
   } = useChat({
     api: '/api/chat',
+    id: currentConvId || undefined,
+    body: { conversationId: currentConvId }, // Pass currentConvId to the API
+    initialMessages: conversationData?.messages?.map((m: any) => ({
+      id: m.id,
+      role: m.role,
+      content: m.content,
+    })) || [],
+    onResponse: (response: any) => {
+      const newId = response.headers.get('x-conversation-id')
+      if (newId && !currentConvId) {
+        setCurrentConvId(newId)
+        // Note: queryClient.invalidateQueries() will run onFinish, which updates the sidebar
+      }
+    },
     onFinish: () => {
       queryClient.invalidateQueries()
       toast.success('Database updated')
@@ -66,6 +100,13 @@ export function AIAssistant() {
 
   const handleSuggestionClick = (text: string) => {
     append({ role: 'user', content: text })
+  }
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      toast.info('File upload coming soon! (Mocked for UI)')
+      e.target.value = '' // reset
+    }
   }
 
   useEffect(() => {
@@ -114,10 +155,17 @@ export function AIAssistant() {
       <div className="flex items-center w-full bg-accent/60 dark:bg-card border border-border/80 hover:border-gemini-purple focus-within:border-gemini-blue focus-within:ring-1 focus-within:ring-gemini-blue/30 rounded-full pl-5 pr-2 py-2 transition-all duration-300 shadow-sm gap-2">
         <button
           type="button"
+          onClick={() => fileInputRef.current?.click()}
           className="h-10 w-10 rounded-full hover:bg-accent text-muted-foreground hover:text-foreground flex items-center justify-center shrink-0 transition"
         >
           <Plus className="h-5 w-5" />
         </button>
+        <input 
+          type="file" 
+          ref={fileInputRef} 
+          className="hidden" 
+          onChange={handleFileUpload}
+        />
 
         {/* Replaced <Input> with standard <input> to fix "doesnt write anything" bug if it was caused by custom component */}
         <input

@@ -2,18 +2,35 @@ import { google } from '@ai-sdk/google'
 import { streamText } from 'ai'
 import * as dbTools from '@/tools'
 import { z } from 'zod'
+import { prisma } from '@/lib/prisma'
 
 export const maxDuration = 30 // Set appropriate timeout for Vercel
 
 export async function POST(req: Request) {
   try {
-    const { messages } = await req.json()
-
-    // Log the interaction
+    const { messages, conversationId } = await req.json()
     const latestMessage = messages[messages.length - 1]
+
+    let activeConversationId = conversationId
+    
+    // If there is a user message, save it
     if (latestMessage && latestMessage.role === 'user') {
-      // Store user prompt in DB in background
-      dbTools.createClient({ name: "Dummy user logging" }).catch(() => {})
+      if (!activeConversationId) {
+        // Create new conversation
+        const conv = await prisma.conversation.create({
+          data: { title: latestMessage.content.substring(0, 40) + '...' }
+        })
+        activeConversationId = conv.id
+      }
+      
+      // Save user message
+      await prisma.chatHistory.create({
+        data: {
+          role: 'user',
+          content: latestMessage.content,
+          conversationId: activeConversationId
+        }
+      })
     }
 
     const result = streamText({
@@ -201,9 +218,28 @@ Algerian Auto Entrepreneur Tax:
         // 8. Google Search Grounding Tool
         googleSearch: google.tools.googleSearch({}),
       } as any,
+      onFinish: async ({ text, toolCalls, toolResults }) => {
+        if (activeConversationId) {
+          // Log assistant text response
+          if (text) {
+            await prisma.chatHistory.create({
+              data: {
+                role: 'assistant',
+                content: text,
+                conversationId: activeConversationId
+              }
+            }).catch(console.error)
+          }
+          // Optionally log tool calls if needed, but text is usually enough for history display
+        }
+      }
     })
 
-    return (result as any).toDataStreamResponse()
+    return (result as any).toDataStreamResponse({
+      headers: {
+        'x-conversation-id': activeConversationId || ''
+      }
+    })
   } catch (error: any) {
     console.error('Chat API Error:', error)
     return new Response(JSON.stringify({ error: error.message }), {
