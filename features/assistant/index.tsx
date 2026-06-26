@@ -52,6 +52,7 @@ export function AIAssistant() {
     setInput,
     isLoading,
     error,
+    append,
   } = useChat({
     api: '/api/chat',
     onFinish: () => {
@@ -64,7 +65,7 @@ export function AIAssistant() {
   } as any) as any
 
   const handleSuggestionClick = (text: string) => {
-    setInput(text)
+    append({ role: 'user', content: text })
   }
 
   useEffect(() => {
@@ -107,7 +108,7 @@ export function AIAssistant() {
   }
 
   // The chat form which we render in different places depending on message state
-  const ChatForm = () => (
+  const renderChatForm = () => (
     <form onSubmit={(e) => { e.preventDefault(); handleSubmit(e); }} className="relative flex flex-col w-full">
       {/* Pill Container */}
       <div className="flex items-center w-full bg-accent/60 dark:bg-card border border-border/80 hover:border-gemini-purple focus-within:border-gemini-blue focus-within:ring-1 focus-within:ring-gemini-blue/30 rounded-full pl-5 pr-2 py-2 transition-all duration-300 shadow-sm gap-2">
@@ -127,29 +128,17 @@ export function AIAssistant() {
           disabled={isLoading}
         />
 
-        <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full hover:bg-accent text-xs font-semibold text-muted-foreground cursor-pointer transition shrink-0">
-          <span>{activeModel}</span>
-          <ChevronDown className="h-3 w-3" />
-        </div>
-
-        <button
-          type="button"
-          className="hidden sm:flex h-10 w-10 rounded-full hover:bg-accent text-muted-foreground hover:text-foreground items-center justify-center shrink-0 transition"
-        >
-          <Mic className="h-5 w-5" />
-        </button>
-
-        {/* Submit Button - Only shows when there is text, like Gemini */}
+        {/* Submit Button - Replaced mic with Go button */}
         {(input || '').trim() && (
           <Button
             type="submit"
             disabled={isLoading}
-            className="h-10 w-10 rounded-full bg-gemini-gradient text-white flex items-center justify-center shrink-0 transition-all duration-300 animate-gemini-glow hover:scale-105 shadow"
+            className="h-10 rounded-full bg-gemini-gradient text-white flex items-center justify-center shrink-0 transition-all duration-300 animate-gemini-glow hover:scale-105 shadow font-semibold px-4"
           >
             {isLoading ? (
               <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
-              <ArrowRight className="h-5 w-5" />
+              "Go"
             )}
           </Button>
         )}
@@ -196,7 +185,7 @@ export function AIAssistant() {
                 ))}
               </div>
               
-              <ChatForm />
+              {renderChatForm()}
             </div>
           </div>
         ) : (
@@ -270,7 +259,7 @@ export function AIAssistant() {
 
             {/* Sticky Form at bottom for active chat */}
             <div className="sticky bottom-0 bg-background/80 backdrop-blur-xl pt-2 pb-4 w-full z-20">
-              <ChatForm />
+              {renderChatForm()}
               <div className="text-[10px] text-center text-muted-foreground mt-2">
                 Zestra AI may display inaccurate info.
               </div>
