@@ -12,7 +12,12 @@ import {
   AlertCircle,
   CheckCircle2,
   Plus,
-  Info
+  Info,
+  ThumbsUp,
+  ThumbsDown,
+  Copy,
+  RefreshCcw,
+  MoreHorizontal
 } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -177,14 +182,14 @@ export function AIAssistant({ conversationId }: AIAssistantProps) {
   }
 
   const renderChatForm = () => (
-    <form onSubmit={handleFormSubmit} className="relative flex flex-col w-full">
-      <div className="flex items-center w-full bg-accent/60 dark:bg-card border border-border/80 hover:border-gemini-purple focus-within:border-gemini-blue focus-within:ring-1 focus-within:ring-gemini-blue/30 rounded-full pl-5 pr-2 py-2 transition-all duration-300 shadow-sm gap-2">
+    <form onSubmit={handleFormSubmit} className="relative flex flex-col w-full max-w-3xl mx-auto">
+      <div className="flex items-center w-full bg-accent/60 dark:bg-[#1e1f20] rounded-[32px] pl-4 pr-2 py-2 transition-all duration-300 gap-2 min-h-[60px] border border-border/10">
         <button
           type="button"
           onClick={() => fileInputRef.current?.click()}
-          className="h-10 w-10 rounded-full hover:bg-accent text-muted-foreground hover:text-foreground flex items-center justify-center shrink-0 transition"
+          className="h-10 w-10 rounded-full hover:bg-white/10 text-muted-foreground flex items-center justify-center shrink-0 transition"
         >
-          <Plus className="h-5 w-5" />
+          <Plus className="h-6 w-6" />
         </button>
         <input
           type="file"
@@ -203,23 +208,30 @@ export function AIAssistant({ conversationId }: AIAssistantProps) {
             }
           }}
           placeholder="Ask Gemini"
-          className="flex-1 text-sm md:text-base border-none focus:outline-none focus:ring-0 bg-transparent h-12 px-1 text-foreground placeholder:text-muted-foreground/60 w-full"
+          className="flex-1 text-[15px] border-none focus:outline-none focus:ring-0 bg-transparent h-12 px-1 text-foreground placeholder:text-muted-foreground/60 w-full"
           disabled={isLoading}
           autoComplete="off"
         />
 
-        {localInput.trim() && (
+        {localInput.trim() ? (
           <Button
             type="submit"
             disabled={isLoading}
-            className="h-10 rounded-full bg-gemini-gradient text-white flex items-center justify-center shrink-0 transition-all duration-300 animate-gemini-glow hover:scale-105 shadow font-semibold px-4"
+            className="h-10 w-10 rounded-full bg-gemini-gradient text-white flex items-center justify-center shrink-0 transition-all duration-300 animate-gemini-glow hover:scale-105 shadow font-semibold p-0"
           >
             {isLoading ? (
               <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
-              "Go"
+              <Sparkles className="h-5 w-5" />
             )}
           </Button>
+        ) : (
+          <button
+            type="button"
+            className="h-10 w-10 rounded-full hover:bg-white/10 text-muted-foreground flex items-center justify-center shrink-0 transition mr-1"
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
+          </button>
         )}
       </div>
     </form>
@@ -278,26 +290,26 @@ export function AIAssistant({ conversationId }: AIAssistantProps) {
                 return (
                   <div
                     key={message.id}
-                    className={`flex gap-4 text-base leading-relaxed ${
+                    className={`flex gap-4 text-[15px] leading-relaxed w-full ${
                       message.role === 'user' ? 'justify-end' : 'justify-start'
                     }`}
                   >
                     {message.role !== 'user' && (
-                      <div className="h-9 w-9 rounded-full shrink-0 flex items-center justify-center border bg-gemini-gradient text-white animate-gemini-glow shadow-sm mt-1">
-                        <Sparkles className="h-4.5 w-4.5" />
+                      <div className="h-9 w-9 rounded-full shrink-0 flex items-center justify-center bg-gemini-gradient text-white animate-gemini-glow shadow-sm mt-1">
+                        <Sparkles className="h-5 w-5" />
                       </div>
                     )}
 
-                    <div className={`space-y-2 max-w-[85%] ${message.role === 'user' ? 'text-right' : ''}`}>
+                    <div className={`space-y-3 max-w-[85%] ${message.role === 'user' ? 'flex flex-col items-end' : ''}`}>
                       {text && (
                         <div
-                          className={`p-4 rounded-3xl ${
+                          className={`${
                             message.role === 'user'
-                              ? 'bg-accent dark:bg-card border border-border text-foreground'
-                              : 'text-foreground leading-relaxed'
+                              ? 'bg-accent/40 dark:bg-[#282a2c] text-foreground px-5 py-3.5 rounded-[24px]'
+                              : 'text-foreground pt-1.5'
                           }`}
                         >
-                          <div className="whitespace-pre-wrap prose prose-sm max-w-none prose-headings:text-foreground prose-a:text-primary dark:prose-invert">
+                          <div className={`whitespace-pre-wrap ${message.role === 'user' ? 'text-[15px]' : 'prose max-w-none prose-headings:text-foreground prose-a:text-primary dark:prose-invert'}`}>
                             {text}
                           </div>
                         </div>
@@ -305,17 +317,32 @@ export function AIAssistant({ conversationId }: AIAssistantProps) {
 
                       {/* Tool Invocations */}
                       {tools.length > 0 && (
-                        <div className="space-y-1">
+                        <div className="space-y-2 mt-2 w-full max-w-md">
                           {tools.map((tool: any, idx: number) => renderToolCall(tool, idx))}
                         </div>
                       )}
-                    </div>
 
-                    {message.role === 'user' && (
-                      <div className="h-9 w-9 rounded-full shrink-0 flex items-center justify-center border border-border bg-card text-foreground shadow-sm mt-1">
-                        <User className="h-4.5 w-4.5" />
-                      </div>
-                    )}
+                      {/* Gemini action icons */}
+                      {message.role !== 'user' && (
+                        <div className="flex items-center gap-1 pt-1 opacity-80">
+                          <button className="h-8 w-8 rounded-full hover:bg-accent/50 dark:hover:bg-[#282a2c] flex items-center justify-center text-muted-foreground transition">
+                            <ThumbsUp className="h-4 w-4" />
+                          </button>
+                          <button className="h-8 w-8 rounded-full hover:bg-accent/50 dark:hover:bg-[#282a2c] flex items-center justify-center text-muted-foreground transition">
+                            <ThumbsDown className="h-4 w-4" />
+                          </button>
+                          <button className="h-8 w-8 rounded-full hover:bg-accent/50 dark:hover:bg-[#282a2c] flex items-center justify-center text-muted-foreground transition">
+                            <RefreshCcw className="h-4 w-4" />
+                          </button>
+                          <button className="h-8 w-8 rounded-full hover:bg-accent/50 dark:hover:bg-[#282a2c] flex items-center justify-center text-muted-foreground transition">
+                            <Copy className="h-4 w-4" />
+                          </button>
+                          <button className="h-8 w-8 rounded-full hover:bg-accent/50 dark:hover:bg-[#282a2c] flex items-center justify-center text-muted-foreground transition">
+                            <MoreHorizontal className="h-4 w-4" />
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 )
               })}
@@ -341,11 +368,13 @@ export function AIAssistant({ conversationId }: AIAssistantProps) {
               <div ref={messagesEndRef} className="h-4" />
             </div>
 
-            {/* Sticky Form at bottom */}
-            <div className="sticky bottom-0 bg-background/80 backdrop-blur-xl pt-2 pb-4 w-full z-20">
-              {renderChatForm()}
-              <div className="text-[10px] text-center text-muted-foreground mt-2">
-                Zestra AI may display inaccurate info.
+            {/* Fixed floating form at bottom */}
+            <div className="fixed bottom-0 left-0 right-0 pt-8 pb-6 px-4 z-20 bg-gradient-to-t from-background via-background to-transparent pointer-events-none">
+              <div className="pointer-events-auto">
+                {renderChatForm()}
+                <div className="text-[11px] text-center text-muted-foreground mt-3 font-[300]">
+                  Gemini is AI and can make mistakes.
+                </div>
               </div>
             </div>
           </div>
