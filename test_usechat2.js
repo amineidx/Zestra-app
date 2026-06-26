@@ -1,0 +1,5 @@
+const fs = require('fs')
+let code = fs.readFileSync('app/api/chat/route.ts', 'utf8')
+code = code.replace("      maxSteps: 5,\n", "")
+fs.writeFileSync('app/api/chat/route.ts', code)
+console.log("Removed maxSteps from route.ts")

@@ -78,19 +78,11 @@ CONSTRAINTS:
 1. You MUST NEVER write directly to the database. All creation, updates, deletes, and lookups must go through your tools.
 2. If a database tool fails or returns success: false, report the exact error to the user.
 
-SEARCH GROUNDING & KNOWLEDGE RETRIEVAL PRIORITY:
+SEARCH & KNOWLEDGE RETRIEVAL PRIORITY:
 Always search in this exact priority:
 1. DATABASE: For business records, clients, transactions, invoices, reminders, or analytics, use the search/read tools first.
 2. KNOWLEDGE BASE: For general/local knowledge and reference articles, call 'searchKnowledge' first.
-3. GOOGLE SEARCH GROUNDING: If the info is not in the Database or Knowledge Base, AND is related to:
-   - Algerian tax updates (e.g. NIF, G50, auto-entrepreneur rates)
-   - CASNOS updates (social security payments, minimum contribution)
-   - Legal/official government changes or announcements in Algeria
-   Use the 'googleSearch' grounding tool. Do not use it for standard personal scheduling or common database lookups.
-4. LLM REASONING: Use your built-in knowledge only when the query cannot be answered by the above.
-
-CITATIONS:
-When using Google Search Grounding, you MUST cite official Algerian government sources (e.g., DGI - Direction Générale des Impôts, CASNOS portal, Journal Officiel de la République Algérienne, or ministries) whenever possible. Format citations clearly in markdown.
+3. LLM REASONING: Use your built-in knowledge when the query cannot be answered by the above.
 
 DZD CURRENCY:
 All financial figures, transactions, and invoice items are in Algerian Dinars (DZD). Make sure to format them as 'X DZD' or 'X DA'.
@@ -249,9 +241,6 @@ Algerian Auto Entrepreneur Tax:
           }),
           execute: async (args: any) => dbTools.searchKnowledge(args),
         },
-
-        // 8. Google Search Grounding Tool
-        googleSearch: google.tools.googleSearch({}),
       } as any,
       onFinish: async ({ text }) => {
         if (activeConversationId && text) {
