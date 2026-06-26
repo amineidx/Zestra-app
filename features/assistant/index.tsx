@@ -1,22 +1,17 @@
 'use client'
 
-import React, { useRef, useEffect, useState } from 'react'
+import React, { useRef, useEffect, useState, useMemo } from 'react'
 import { useChat } from '@ai-sdk/react'
+import { DefaultChatTransport } from 'ai'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useQueryClient } from '@tanstack/react-query'
 import {
-  Bot,
   User,
   Loader2,
   Sparkles,
   AlertCircle,
   CheckCircle2,
-  ChevronRight,
   Plus,
-  Mic,
-  ArrowRight,
-  ChevronDown,
   Info
 } from 'lucide-react'
 import { toast } from 'sonner'
@@ -36,82 +31,88 @@ export function AIAssistant({ conversationId }: AIAssistantProps) {
   const queryClient = useQueryClient()
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
-  const [activeModel, setActiveModel] = useState('Flash')
-  
-  const { data: settings } = useQuery({
-    queryKey: ['settings'],
-    queryFn: async () => {
-      const res = await fetch('/api/settings')
-      if (!res.ok) throw new Error('Failed to load settings')
-      return res.json()
-    },
-  })
 
-  // Fetch initial messages if we have a conversationId
-  const { data: conversationData } = useQuery({
-    queryKey: ['conversation', conversationId],
-    queryFn: async () => {
-      if (!conversationId) return { messages: [] }
-      const res = await fetch(`/api/conversations/${conversationId}`)
-      if (!res.ok) throw new Error('Failed to load conversation')
-      return res.json()
-    },
-    enabled: !!conversationId,
-  })
-
-  const userName = settings?.businessName || 'Auto Entrepreneur'
-
-  // Local state to track the conversation ID if one is created during a "New" session
-  const [currentConvId, setCurrentConvId] = useState<string | null>(conversationId || null)
-
-  // Fully local input state — decoupled from useChat to prevent typing bugs
+  // Fully local input state
   const [localInput, setLocalInput] = useState('')
+  const [currentConvId, setCurrentConvId] = useState<string | null>(conversationId || null)
+  const [userName, setUserName] = useState('Auto Entrepreneur')
+
+  // Fetch settings for user name
+  useEffect(() => {
+    fetch('/api/settings')
+      .then(r => r.ok ? r.json() : null)
+      .then(data => { if (data?.businessName) setUserName(data.businessName) })
+      .catch(() => {})
+  }, [])
+
+  // Create a stable transport that includes the conversationId in the body
+  const transport = useMemo(() => new DefaultChatTransport({
+    api: '/api/chat',
+    body: { conversationId: currentConvId },
+  }), [currentConvId])
 
   const {
     messages,
-    isLoading,
+    sendMessage,
+    status,
     error,
-    append,
+    setMessages,
   } = useChat({
-    api: '/api/chat',
     id: currentConvId || undefined,
-    body: { conversationId: currentConvId },
-    initialMessages: conversationData?.messages?.map((m: any) => ({
-      id: m.id,
-      role: m.role,
-      content: m.content,
-    })) || [],
-    onResponse: (response: any) => {
-      const newId = response.headers.get('x-conversation-id')
-      if (newId && !currentConvId) {
-        setCurrentConvId(newId)
-      }
-    },
+    transport,
     onFinish: () => {
       queryClient.invalidateQueries()
-      toast.success('Database updated')
     },
     onError: (err: any) => {
-      toast.error(`Assistant error: ${err.message}`)
+      toast.error(`Assistant error: ${err?.message || 'Unknown error'}`)
     },
-  } as any) as any
+  })
 
-  const handleLocalSubmit = (e?: React.FormEvent) => {
-    if (e) e.preventDefault()
-    const trimmed = localInput.trim()
+  const isLoading = status === 'submitted' || status === 'streaming'
+
+  // Load existing conversation messages
+  useEffect(() => {
+    if (!conversationId) return
+    fetch(`/api/conversations/${conversationId}`)
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (data?.messages?.length) {
+          const mapped = data.messages.map((m: any) => ({
+            id: m.id,
+            role: m.role,
+            parts: [{ type: 'text', text: m.content }],
+          }))
+          setMessages(mapped)
+        }
+      })
+      .catch(() => {})
+  }, [conversationId, setMessages])
+
+  const handleSend = async (text: string) => {
+    const trimmed = text.trim()
     if (!trimmed || isLoading) return
-    append({ role: 'user', content: trimmed })
     setLocalInput('')
+    try {
+      await sendMessage({ text: trimmed })
+      queryClient.invalidateQueries({ queryKey: ['conversations'] })
+    } catch (err: any) {
+      toast.error(`Failed to send: ${err?.message || 'Unknown error'}`)
+    }
+  }
+
+  const handleFormSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    handleSend(localInput)
   }
 
   const handleSuggestionClick = (text: string) => {
-    append({ role: 'user', content: text })
+    handleSend(text)
   }
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      toast.info('File upload coming soon! (Mocked for UI)')
-      e.target.value = '' // reset
+      toast.info('File upload coming soon!')
+      e.target.value = ''
     }
   }
 
@@ -119,15 +120,39 @@ export function AIAssistant({ conversationId }: AIAssistantProps) {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
 
-  const renderToolCall = (toolInvocation: any) => {
-    const { toolCallId, toolName, state, result } = toolInvocation
-    const nameFormatted = toolName.replace(/([A-Z])/g, ' $1').trim()
+  // Helper to extract text content from a message
+  const getMessageText = (message: any): string => {
+    // v7 messages use `parts` array
+    if (message.parts) {
+      return message.parts
+        .filter((p: any) => p.type === 'text')
+        .map((p: any) => p.text)
+        .join('')
+    }
+    // Fallback for legacy `content` field
+    if (message.content) return message.content
+    return ''
+  }
 
-    if (state === 'call') {
+  // Helper to extract tool invocations from a message
+  const getToolInvocations = (message: any): any[] => {
+    if (message.parts) {
+      return message.parts.filter((p: any) => p.type === 'tool-invocation')
+    }
+    if (message.toolInvocations) return message.toolInvocations
+    return []
+  }
+
+  const renderToolCall = (part: any, idx: number) => {
+    const toolInvocation = part.toolInvocation || part
+    const { toolCallId, toolName, state, result } = toolInvocation
+    const nameFormatted = (toolName || '').replace(/([A-Z])/g, ' $1').trim()
+
+    if (state === 'call' || state === 'partial-call') {
       return (
-        <div key={toolCallId} className="flex items-center gap-2 text-xs text-muted-foreground bg-muted/40 dark:bg-card/40 p-2 rounded-lg my-1.5 border border-dashed border-border/80">
+        <div key={toolCallId || idx} className="flex items-center gap-2 text-xs text-muted-foreground bg-muted/40 dark:bg-card/40 p-2 rounded-lg my-1.5 border border-dashed border-border/80">
           <Loader2 className="h-3 w-3 animate-spin text-gemini-blue" />
-          <span>Running operation: {nameFormatted}...</span>
+          <span>Running: {nameFormatted}...</span>
         </div>
       )
     }
@@ -135,18 +160,15 @@ export function AIAssistant({ conversationId }: AIAssistantProps) {
     if (state === 'result') {
       const isSuccess = result?.success !== false
       return (
-        <div key={toolCallId} className="flex items-center gap-2 text-xs p-2 rounded-lg my-1.5 border bg-muted dark:bg-card/30">
+        <div key={toolCallId || idx} className="flex items-center gap-2 text-xs p-2 rounded-lg my-1.5 border bg-muted dark:bg-card/30">
           {isSuccess ? (
             <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
           ) : (
             <AlertCircle className="h-3.5 w-3.5 text-rose-500" />
           )}
           <span className="font-semibold text-foreground">
-            {nameFormatted}: {isSuccess ? 'Completed' : 'Failed'}
+            {nameFormatted}: {isSuccess ? 'Done' : 'Failed'}
           </span>
-          {result?.client && <span className="text-muted-foreground text-[10px]">({result.client.name})</span>}
-          {result?.transaction && <span className="text-muted-foreground text-[10px]">({result.transaction.amount} DZD)</span>}
-          {result?.invoice && <span className="text-muted-foreground text-[10px]">({result.invoice.invoiceNumber})</span>}
         </div>
       )
     }
@@ -154,10 +176,8 @@ export function AIAssistant({ conversationId }: AIAssistantProps) {
     return null
   }
 
-  // The chat form which we render in different places depending on message state
   const renderChatForm = () => (
-    <form onSubmit={handleLocalSubmit} className="relative flex flex-col w-full">
-      {/* Pill Container */}
+    <form onSubmit={handleFormSubmit} className="relative flex flex-col w-full">
       <div className="flex items-center w-full bg-accent/60 dark:bg-card border border-border/80 hover:border-gemini-purple focus-within:border-gemini-blue focus-within:ring-1 focus-within:ring-gemini-blue/30 rounded-full pl-5 pr-2 py-2 transition-all duration-300 shadow-sm gap-2">
         <button
           type="button"
@@ -166,24 +186,28 @@ export function AIAssistant({ conversationId }: AIAssistantProps) {
         >
           <Plus className="h-5 w-5" />
         </button>
-        <input 
-          type="file" 
-          ref={fileInputRef} 
-          className="hidden" 
+        <input
+          type="file"
+          ref={fileInputRef}
+          className="hidden"
           onChange={handleFileUpload}
         />
 
         <input
           value={localInput}
           onChange={(e) => setLocalInput(e.target.value)}
-          onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleLocalSubmit(); } }}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+              e.preventDefault()
+              handleSend(localInput)
+            }
+          }}
           placeholder="Ask Gemini"
           className="flex-1 text-sm md:text-base border-none focus:outline-none focus:ring-0 bg-transparent h-12 px-1 text-foreground placeholder:text-muted-foreground/60 w-full"
           disabled={isLoading}
           autoComplete="off"
         />
 
-        {/* Submit Button */}
         {localInput.trim() && (
           <Button
             type="submit"
@@ -220,14 +244,14 @@ export function AIAssistant({ conversationId }: AIAssistantProps) {
       {/* Main Content Area */}
       <div className="flex-1 overflow-y-auto w-full relative z-10 flex flex-col pt-14">
         {messages.length === 0 ? (
-          /* Empty State - Centered layout matching reference image */
+          /* Empty State */
           <div className="max-w-3xl w-full mx-auto flex-1 flex flex-col justify-center items-center px-4 pb-20">
             <h1 className="text-3xl md:text-4xl font-normal tracking-tight text-foreground mb-8 text-center">
-              Hi {userName.split(' ')[0]}, let's get into it
+              Hi {userName.split(' ')[0]}, let&apos;s get into it
             </h1>
-            
+
             <div className="w-full max-w-2xl relative z-20">
-              {/* Quick Actions at the top of chat box */}
+              {/* Quick Actions */}
               <div className="flex flex-wrap items-center justify-center gap-2 mb-6 w-full">
                 {SUGGESTED_PROMPTS.map((prompt, idx) => (
                   <button
@@ -239,7 +263,7 @@ export function AIAssistant({ conversationId }: AIAssistantProps) {
                   </button>
                 ))}
               </div>
-              
+
               {renderChatForm()}
             </div>
           </div>
@@ -247,50 +271,55 @@ export function AIAssistant({ conversationId }: AIAssistantProps) {
           /* Messages Stream */
           <div className="flex-1 w-full max-w-3xl mx-auto flex flex-col pb-6 px-4">
             <div className="flex-1 space-y-8 py-8">
-              {messages.map((message: any) => (
-                <div
-                  key={message.id}
-                  className={`flex gap-4 text-base leading-relaxed ${
-                    message.role === 'user' ? 'justify-end' : 'justify-start'
-                  }`}
-                >
-                  {message.role !== 'user' && (
-                    <div className="h-9 w-9 rounded-full shrink-0 flex items-center justify-center border bg-gemini-gradient text-white animate-gemini-glow shadow-sm mt-1">
-                      <Sparkles className="h-4.5 w-4.5" />
-                    </div>
-                  )}
+              {messages.map((message: any) => {
+                const text = getMessageText(message)
+                const tools = getToolInvocations(message)
 
-                  <div className={`space-y-2 max-w-[85%] ${message.role === 'user' ? 'text-right' : ''}`}>
-                    <div
-                      className={`p-4 rounded-3xl ${
-                        message.role === 'user'
-                          ? 'bg-accent dark:bg-card border border-border text-foreground'
-                          : 'text-foreground leading-relaxed'
-                      }`}
-                    >
-                      <div className="whitespace-pre-wrap prose prose-sm max-w-none prose-headings:text-foreground prose-a:text-primary dark:prose-invert">
-                        {message.content}
+                return (
+                  <div
+                    key={message.id}
+                    className={`flex gap-4 text-base leading-relaxed ${
+                      message.role === 'user' ? 'justify-end' : 'justify-start'
+                    }`}
+                  >
+                    {message.role !== 'user' && (
+                      <div className="h-9 w-9 rounded-full shrink-0 flex items-center justify-center border bg-gemini-gradient text-white animate-gemini-glow shadow-sm mt-1">
+                        <Sparkles className="h-4.5 w-4.5" />
                       </div>
+                    )}
+
+                    <div className={`space-y-2 max-w-[85%] ${message.role === 'user' ? 'text-right' : ''}`}>
+                      {text && (
+                        <div
+                          className={`p-4 rounded-3xl ${
+                            message.role === 'user'
+                              ? 'bg-accent dark:bg-card border border-border text-foreground'
+                              : 'text-foreground leading-relaxed'
+                          }`}
+                        >
+                          <div className="whitespace-pre-wrap prose prose-sm max-w-none prose-headings:text-foreground prose-a:text-primary dark:prose-invert">
+                            {text}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Tool Invocations */}
+                      {tools.length > 0 && (
+                        <div className="space-y-1">
+                          {tools.map((tool: any, idx: number) => renderToolCall(tool, idx))}
+                        </div>
+                      )}
                     </div>
 
-                    {/* Render Tool Invocations */}
-                    {message.toolInvocations && (
-                      <div className="space-y-1">
-                        {message.toolInvocations.map((toolInvocation: any) =>
-                          renderToolCall(toolInvocation)
-                        )}
+                    {message.role === 'user' && (
+                      <div className="h-9 w-9 rounded-full shrink-0 flex items-center justify-center border border-border bg-card text-foreground shadow-sm mt-1">
+                        <User className="h-4.5 w-4.5" />
                       </div>
                     )}
                   </div>
+                )
+              })}
 
-                  {message.role === 'user' && (
-                    <div className="h-9 w-9 rounded-full shrink-0 flex items-center justify-center border border-border bg-card text-foreground shadow-sm mt-1">
-                      <User className="h-4.5 w-4.5" />
-                    </div>
-                  )}
-                </div>
-              ))}
-              
               {isLoading && messages[messages.length - 1]?.role === 'user' && (
                 <div className="flex gap-4 items-start mt-8">
                   <div className="h-9 w-9 rounded-full shrink-0 flex items-center justify-center border bg-gemini-gradient text-white animate-gemini-glow shadow-sm mt-1">
@@ -302,7 +331,7 @@ export function AIAssistant({ conversationId }: AIAssistantProps) {
                   </div>
                 </div>
               )}
-              
+
               {error && (
                 <div className="flex items-center gap-2 text-xs text-destructive bg-destructive/10 p-4 rounded-xl mt-4">
                   <AlertCircle className="h-4.5 w-4.5 shrink-0" />
@@ -312,7 +341,7 @@ export function AIAssistant({ conversationId }: AIAssistantProps) {
               <div ref={messagesEndRef} className="h-4" />
             </div>
 
-            {/* Sticky Form at bottom for active chat */}
+            {/* Sticky Form at bottom */}
             <div className="sticky bottom-0 bg-background/80 backdrop-blur-xl pt-2 pb-4 w-full z-20">
               {renderChatForm()}
               <div className="text-[10px] text-center text-muted-foreground mt-2">

@@ -8,34 +8,65 @@ export const maxDuration = 30 // Set appropriate timeout for Vercel
 
 export async function POST(req: Request) {
   try {
-    const { messages, conversationId } = await req.json()
+    const body = await req.json()
+    const messages = body.messages || []
+    const conversationId = body.conversationId || null
+
+    // Extract the latest user message text (v7 UIMessage format uses `parts`)
     const latestMessage = messages[messages.length - 1]
+    let userText = ''
+    if (latestMessage && latestMessage.role === 'user') {
+      // v7 format: parts array with { type: 'text', text: '...' }
+      if (latestMessage.parts) {
+        userText = latestMessage.parts
+          .filter((p: any) => p.type === 'text')
+          .map((p: any) => p.text)
+          .join('')
+      } else if (latestMessage.content) {
+        // Fallback for legacy format
+        userText = typeof latestMessage.content === 'string'
+          ? latestMessage.content
+          : JSON.stringify(latestMessage.content)
+      }
+    }
 
     let activeConversationId = conversationId
-    
-    // If there is a user message, save it
-    if (latestMessage && latestMessage.role === 'user') {
+
+    // Save user message to DB
+    if (userText) {
       if (!activeConversationId) {
-        // Create new conversation
         const conv = await prisma.conversation.create({
-          data: { title: latestMessage.content.substring(0, 40) + '...' }
+          data: { title: userText.substring(0, 40) + (userText.length > 40 ? '...' : '') }
         })
         activeConversationId = conv.id
       }
-      
-      // Save user message
+
       await prisma.chatHistory.create({
         data: {
           role: 'user',
-          content: latestMessage.content,
+          content: userText,
           conversationId: activeConversationId
         }
       })
     }
 
+    // Convert v7 messages to the format Gemini expects
+    const llmMessages = messages.map((m: any) => {
+      let content = ''
+      if (m.parts) {
+        content = m.parts
+          .filter((p: any) => p.type === 'text')
+          .map((p: any) => p.text)
+          .join('')
+      } else if (m.content) {
+        content = typeof m.content === 'string' ? m.content : JSON.stringify(m.content)
+      }
+      return { role: m.role, content }
+    })
+
     const result = streamText({
       model: google('gemini-2.5-flash'),
-      messages,
+      messages: llmMessages,
       system: `You are Zestra's AI Business Assistant, a professional AI operating system designed for a single Algerian Auto Entrepreneur.
 Your role is to help the user manage their clients, transactions, invoices, reminders, and documents.
 
@@ -218,28 +249,20 @@ Algerian Auto Entrepreneur Tax:
         // 8. Google Search Grounding Tool
         googleSearch: google.tools.googleSearch({}),
       } as any,
-      onFinish: async ({ text, toolCalls, toolResults }) => {
-        if (activeConversationId) {
-          // Log assistant text response
-          if (text) {
-            await prisma.chatHistory.create({
-              data: {
-                role: 'assistant',
-                content: text,
-                conversationId: activeConversationId
-              }
-            }).catch(console.error)
-          }
-          // Optionally log tool calls if needed, but text is usually enough for history display
+      onFinish: async ({ text }) => {
+        if (activeConversationId && text) {
+          await prisma.chatHistory.create({
+            data: {
+              role: 'assistant',
+              content: text,
+              conversationId: activeConversationId
+            }
+          }).catch(console.error)
         }
       }
     })
 
-    return (result as any).toDataStreamResponse({
-      headers: {
-        'x-conversation-id': activeConversationId || ''
-      }
-    })
+    return result.toUIMessageStreamResponse()
   } catch (error: any) {
     console.error('Chat API Error:', error)
     return new Response(JSON.stringify({ error: error.message }), {
