@@ -170,7 +170,7 @@ export function AIAssistant({ conversationId }: AIAssistantProps) {
         {/* Replaced <Input> with standard <input> to fix "doesnt write anything" bug if it was caused by custom component */}
         <input
           value={input || ''}
-          onChange={handleInputChange}
+          onChange={(e) => setInput(e.target.value)}
           placeholder="Ask Gemini"
           className="flex-1 text-sm md:text-base border-none focus:outline-none focus:ring-0 bg-transparent h-12 px-1 text-foreground placeholder:text-muted-foreground/60 w-full"
           disabled={isLoading}
