@@ -91,13 +91,13 @@ export function AIAssistant() {
     if (state === 'result') {
       const isSuccess = result?.success !== false
       return (
-        <div key={toolCallId} className="flex items-center gap-2 text-xs p-2 rounded-lg my-1.5 border bg-surface-soft dark:bg-card/30">
+        <div key={toolCallId} className="flex items-center gap-2 text-xs p-2 rounded-lg my-1.5 border bg-muted dark:bg-card/30">
           {isSuccess ? (
             <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
           ) : (
             <AlertCircle className="h-3.5 w-3.5 text-rose-500" />
           )}
-          <span className="font-semibold text-ink dark:text-foreground">
+          <span className="font-semibold text-foreground dark:text-foreground">
             {nameFormatted}: {isSuccess ? 'Completed' : 'Failed'}
           </span>
           {result?.client && <span className="text-muted-foreground text-[10px]">({result.client.name})</span>}
@@ -116,7 +116,7 @@ export function AIAssistant() {
       <header className="h-14 px-6 border-b border-border/60 flex items-center justify-between shrink-0">
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full hover:bg-accent cursor-pointer transition">
-            <span className="text-sm font-semibold tracking-tight text-ink dark:text-foreground">Zestra Assistant</span>
+            <span className="text-sm font-semibold tracking-tight text-foreground dark:text-foreground">Zestra Assistant</span>
             <span className="text-[10px] px-1.5 py-0.5 rounded bg-gemini-gradient text-white font-bold uppercase tracking-wider scale-90">
               AI
             </span>
@@ -133,7 +133,7 @@ export function AIAssistant() {
           /* Empty state - Gemini dashboard look */
           <div className="max-w-3xl w-full mx-auto flex flex-col justify-center min-h-[60vh] space-y-12">
             <div className="space-y-4">
-              <h1 className="text-4xl md:text-5xl font-semibold tracking-tight text-ink dark:text-foreground">
+              <h1 className="text-4xl md:text-5xl font-semibold tracking-tight text-foreground dark:text-foreground">
                 Hi <span className="text-gemini-gradient animate-gemini-glow bg-clip-text text-transparent">{userName}</span>,
               </h1>
               <p className="text-3xl md:text-4xl font-semibold tracking-tight text-muted-foreground">
@@ -151,7 +151,7 @@ export function AIAssistant() {
                     className="cursor-pointer border border-border/60 hover:border-gemini-purple bg-card hover:bg-accent/40 shadow-none transition-all duration-300 p-4 rounded-xl flex items-center justify-between group"
                   >
                     <CardContent className="p-0 flex-1 pr-4">
-                      <p className="text-sm font-medium text-ink dark:text-foreground tracking-tight leading-relaxed">{prompt.label}</p>
+                      <p className="text-sm font-medium text-foreground dark:text-foreground tracking-tight leading-relaxed">{prompt.label}</p>
                       <p className="text-xs text-muted-foreground mt-1 line-clamp-1">{prompt.text}</p>
                     </CardContent>
                     <div className="h-8 w-8 rounded-full bg-accent flex items-center justify-center shrink-0 transition-transform group-hover:translate-x-0.5">
@@ -182,11 +182,11 @@ export function AIAssistant() {
                   <div
                     className={`p-4 rounded-2xl ${
                       message.role === 'user'
-                        ? 'bg-accent/80 dark:bg-card border border-border text-ink dark:text-foreground'
-                        : 'text-ink dark:text-foreground leading-relaxed'
+                        ? 'bg-accent/80 dark:bg-card border border-border text-foreground dark:text-foreground'
+                        : 'text-foreground dark:text-foreground leading-relaxed'
                     }`}
                   >
-                    <div className="whitespace-pre-wrap prose prose-sm max-w-none prose-headings:text-ink prose-a:text-gemini-blue dark:prose-invert">
+                    <div className="whitespace-pre-wrap prose prose-sm max-w-none prose-headings:text-foreground prose-a:text-gemini-blue dark:prose-invert">
                       {message.content}
                     </div>
                   </div>
@@ -202,7 +202,7 @@ export function AIAssistant() {
                 </div>
 
                 {message.role === 'user' && (
-                  <div className="h-9 w-9 rounded-full shrink-0 flex items-center justify-center border border-border bg-card text-ink dark:text-foreground shadow-sm">
+                  <div className="h-9 w-9 rounded-full shrink-0 flex items-center justify-center border border-border bg-card text-foreground dark:text-foreground shadow-sm">
                     <User className="h-4.5 w-4.5" />
                   </div>
                 )}
@@ -249,7 +249,7 @@ export function AIAssistant() {
                 value={input || ''}
                 onChange={handleInputChange}
                 placeholder="Ask AI co-pilot to create invoices, log income, check CASNOS..."
-                className="flex-1 text-sm md:text-base border-none focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent h-9 px-1 text-ink dark:text-foreground placeholder:text-muted-foreground/60 shadow-none"
+                className="flex-1 text-sm md:text-base border-none focus-visible:ring-0 focus-visible:ring-offset-0 bg-transparent h-9 px-1 text-foreground dark:text-foreground placeholder:text-muted-foreground/60 shadow-none"
                 disabled={isLoading}
               />
 

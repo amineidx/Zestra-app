@@ -135,7 +135,7 @@ export default function Home() {
           <div className={`flex items-center gap-2 transition-opacity duration-300 ${
             isSidebarExpanded ? 'opacity-100' : 'opacity-0 pointer-events-none w-0'
           }`}>
-            <span className="font-bold text-lg tracking-tight text-ink dark:text-white">Zestra</span>
+            <span className="font-bold text-lg tracking-tight text-foreground dark:text-foreground">Zestra</span>
             <span className="text-[9px] px-1.5 py-0.5 rounded bg-gemini-gradient text-white font-bold uppercase tracking-wider">
               PRO
             </span>
@@ -148,7 +148,7 @@ export default function Home() {
           {isSidebarExpanded ? (
             <button 
               onClick={() => setActiveTab('assistant')}
-              className="w-full h-11 px-4 rounded-full bg-accent/60 hover:bg-accent text-xs font-semibold uppercase flex items-center justify-start gap-3 transition border border-border/40 text-ink dark:text-foreground hover:scale-[1.01]"
+              className="w-full h-11 px-4 rounded-full bg-accent/60 hover:bg-accent text-xs font-semibold uppercase flex items-center justify-start gap-3 transition border border-border/40 text-foreground dark:text-foreground hover:scale-[1.01]"
             >
               <Plus className="h-4.5 w-4.5 text-gemini-purple" />
               <span>New Instruction</span>
@@ -156,7 +156,7 @@ export default function Home() {
           ) : (
             <button 
               onClick={() => setActiveTab('assistant')}
-              className="w-10 h-10 mx-auto rounded-full bg-accent/60 hover:bg-accent flex items-center justify-center transition border border-border/40 text-ink dark:text-foreground hover:scale-105"
+              className="w-10 h-10 mx-auto rounded-full bg-accent/60 hover:bg-accent flex items-center justify-center transition border border-border/40 text-foreground dark:text-foreground hover:scale-105"
               title="New Instruction"
             >
               <Plus className="h-4.5 w-4.5 text-gemini-purple" />
@@ -176,7 +176,7 @@ export default function Home() {
                   isSidebarExpanded ? 'px-4 py-3 justify-start gap-3' : 'p-3 justify-center'
                 } ${
                   isActive 
-                    ? 'bg-accent text-ink dark:text-white font-semibold border-l-4 border-gemini-blue' 
+                    ? 'bg-accent text-foreground dark:text-foreground font-semibold border-l-4 border-gemini-blue' 
                     : 'text-muted-foreground hover:text-foreground hover:bg-accent/40'
                 }`}
                 title={!isSidebarExpanded ? item.label : undefined}
@@ -184,7 +184,7 @@ export default function Home() {
                 {isActive && item.key === 'assistant' ? (
                   <Icon className="h-5 w-5 text-gemini-gradient shrink-0" />
                 ) : (
-                  <Icon className={`h-5 w-5 shrink-0 ${isActive ? 'text-ink dark:text-foreground' : 'text-muted-foreground group-hover:text-foreground'}`} />
+                  <Icon className={`h-5 w-5 shrink-0 ${isActive ? 'text-foreground dark:text-foreground' : 'text-muted-foreground group-hover:text-foreground'}`} />
                 )}
                 
                 {isSidebarExpanded && (
@@ -216,7 +216,7 @@ export default function Home() {
               isSidebarExpanded ? 'px-4 py-2.5 gap-3' : 'p-2.5 justify-center'
             } ${
               activeTab === 'settings' 
-                ? 'bg-accent text-ink dark:text-white font-semibold' 
+                ? 'bg-accent text-foreground dark:text-foreground font-semibold' 
                 : 'text-muted-foreground hover:text-foreground hover:bg-accent/40'
             }`}
             title="Settings"
@@ -232,7 +232,7 @@ export default function Home() {
             </div>
             {isSidebarExpanded && (
               <div className="flex flex-col min-w-0">
-                <span className="text-xs font-semibold text-ink dark:text-foreground truncate">{userName}</span>
+                <span className="text-xs font-semibold text-foreground dark:text-foreground truncate">{userName}</span>
                 <span className="text-[10px] text-muted-foreground truncate">Algerian Auto Entrepreneur</span>
               </div>
             )}
@@ -290,7 +290,7 @@ export default function Home() {
                       }}
                       className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold transition ${
                         isActive 
-                          ? 'bg-accent text-ink dark:text-white border-l-4 border-gemini-blue' 
+                          ? 'bg-accent text-foreground dark:text-foreground border-l-4 border-gemini-blue' 
                           : 'text-muted-foreground hover:text-foreground hover:bg-accent/40'
                       }`}
                     >
@@ -308,7 +308,7 @@ export default function Home() {
                     setIsMobileOpen(false)
                   }}
                   className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold transition ${
-                    activeTab === 'settings' ? 'bg-accent text-ink dark:text-white' : 'text-muted-foreground'
+                    activeTab === 'settings' ? 'bg-accent text-foreground dark:text-foreground' : 'text-muted-foreground'
                   }`}
                 >
                   <SettingsIcon className="h-5 w-5" />

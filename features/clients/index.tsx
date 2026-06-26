@@ -94,82 +94,82 @@ export function Clients() {
   return (
     <div className="space-y-8 py-8 max-w-5xl mx-auto px-4 md:px-8">
       {/* Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-hairline pb-6">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-border pb-6">
         <div>
-          <span className="text-xs font-semibold tracking-widest text-muted-custom uppercase">CRM Database</span>
-          <h1 className="text-3xl font-normal tracking-tight text-ink mt-1">Clients</h1>
-          <p className="text-sm text-body-text mt-1">Manage contact directories, business NIFs, and invoicing links.</p>
+          <span className="text-xs font-semibold tracking-widest text-muted-foreground uppercase">CRM Database</span>
+          <h1 className="text-3xl font-normal tracking-tight text-foreground mt-1">Clients</h1>
+          <p className="text-sm text-muted-foreground mt-1">Manage contact directories, business NIFs, and invoicing links.</p>
         </div>
 
         <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
           <DialogTrigger className="rounded-lg bg-primary text-primary-foreground hover:bg-primary-active h-10 px-4 gap-2 text-sm flex items-center justify-center font-medium cursor-pointer">
             <UserPlus className="h-4 w-4" /> Add Client
           </DialogTrigger>
-          <DialogContent className="sm:max-w-md bg-canvas">
+          <DialogContent className="sm:max-w-md bg-background">
             <DialogHeader>
-              <DialogTitle className="text-xl font-normal tracking-tight text-ink">Add Client</DialogTitle>
+              <DialogTitle className="text-xl font-normal tracking-tight text-foreground">Add Client</DialogTitle>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4 pt-2">
               <div className="space-y-1">
-                <label className="text-xs uppercase font-medium text-muted-custom">Client Name / Corporate Name</label>
+                <label className="text-xs uppercase font-medium text-muted-foreground">Client Name / Corporate Name</label>
                 <Input
                   required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="e.g. Salim Boumedienne"
-                  className="border-hairline h-10"
+                  className="border-border h-10"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <label className="text-xs uppercase font-medium text-muted-custom">Email</label>
+                  <label className="text-xs uppercase font-medium text-muted-foreground">Email</label>
                   <Input
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="email@company.dz"
-                    className="border-hairline h-10"
+                    className="border-border h-10"
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-xs uppercase font-medium text-muted-custom">Phone</label>
+                  <label className="text-xs uppercase font-medium text-muted-foreground">Phone</label>
                   <Input
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     placeholder="+213 555..."
-                    className="border-hairline h-10"
+                    className="border-border h-10"
                   />
                 </div>
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs uppercase font-medium text-muted-custom">Physical Address</label>
+                <label className="text-xs uppercase font-medium text-muted-foreground">Physical Address</label>
                 <Input
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
                   placeholder="Algiers, Algeria"
-                  className="border-hairline h-10"
+                  className="border-border h-10"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <label className="text-xs uppercase font-medium text-muted-custom">NIF (Tax ID)</label>
+                  <label className="text-xs uppercase font-medium text-muted-foreground">NIF (Tax ID)</label>
                   <Input
                     value={nif}
                     onChange={(e) => setNif(e.target.value)}
                     placeholder="15-digit Tax Code"
-                    className="border-hairline h-10"
+                    className="border-border h-10"
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-xs uppercase font-medium text-muted-custom">Auto-Entrepreneur Card N°</label>
+                  <label className="text-xs uppercase font-medium text-muted-foreground">Auto-Entrepreneur Card N°</label>
                   <Input
                     value={autoEntrepreneurNumber}
                     onChange={(e) => setAutoEntrepreneurNumber(e.target.value)}
                     placeholder="e.g. 26/00123/AE"
-                    className="border-hairline h-10"
+                    className="border-border h-10"
                   />
                 </div>
               </div>
@@ -190,12 +190,12 @@ export function Clients() {
 
       {/* Search */}
       <div className="relative">
-        <Search className="absolute left-3 top-3 h-4 w-4 text-muted-custom" />
+        <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
         <Input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search by name, email, phone..."
-          className="pl-9 border-hairline h-10 bg-canvas"
+          className="pl-9 border-border h-10 bg-background"
         />
       </div>
 
@@ -206,18 +206,18 @@ export function Clients() {
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-ink mx-auto"></div>
           </div>
         ) : clients.length === 0 ? (
-          <div className="col-span-full text-center py-8 text-sm text-muted-custom border border-dashed border-hairline rounded-lg p-12">
+          <div className="col-span-full text-center py-8 text-sm text-muted-foreground border border-dashed border-border rounded-lg p-12">
             No client records found. Create one or let the AI co-pilot do it.
           </div>
         ) : (
           clients.map((client: any) => (
-            <Card key={client.id} className="rounded-lg border border-hairline shadow-none bg-canvas flex flex-col justify-between">
+            <Card key={client.id} className="rounded-lg border border-border shadow-none bg-background flex flex-col justify-between">
               <CardContent className="p-6 space-y-4">
                 <div className="flex justify-between items-start">
                   <div>
-                    <h3 className="font-semibold text-ink text-base tracking-tight">{client.name}</h3>
+                    <h3 className="font-semibold text-foreground text-base tracking-tight">{client.name}</h3>
                     {client.autoEntrepreneurNumber && (
-                      <span className="text-[10px] bg-signature-cream px-2 py-0.5 rounded text-ink font-medium mt-1 inline-block">
+                      <span className="text-[10px] bg-accent/50 px-2 py-0.5 rounded text-foreground font-medium mt-1 inline-block">
                         Card: {client.autoEntrepreneurNumber}
                       </span>
                     )}
@@ -226,33 +226,33 @@ export function Clients() {
                     size="icon"
                     variant="ghost"
                     onClick={() => deleteMutation.mutate(client.id)}
-                    className="h-8 w-8 text-muted-custom hover:text-destructive hover:bg-destructive/10"
+                    className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
                   >
                     <Trash className="h-4 w-4" />
                   </Button>
                 </div>
 
-                <div className="space-y-2 text-xs text-body-text">
+                <div className="space-y-2 text-xs text-muted-foreground">
                   {client.email && (
                     <p className="flex items-center gap-2">
-                      <Mail className="h-3.5 w-3.5 text-muted-custom" /> {client.email}
+                      <Mail className="h-3.5 w-3.5 text-muted-foreground" /> {client.email}
                     </p>
                   )}
                   {client.phone && (
                     <p className="flex items-center gap-2">
-                      <Phone className="h-3.5 w-3.5 text-muted-custom" /> {client.phone}
+                      <Phone className="h-3.5 w-3.5 text-muted-foreground" /> {client.phone}
                     </p>
                   )}
                   {client.address && (
                     <p className="flex items-center gap-2">
-                      <MapPin className="h-3.5 w-3.5 text-muted-custom" /> {client.address}
+                      <MapPin className="h-3.5 w-3.5 text-muted-foreground" /> {client.address}
                     </p>
                   )}
                 </div>
 
                 {client.nif && (
-                  <div className="text-[10px] text-muted-custom border-t border-hairline/60 pt-2">
-                    <span className="font-semibold text-ink">NIF:</span> {client.nif}
+                  <div className="text-[10px] text-muted-foreground border-t border-border/60 pt-2">
+                    <span className="font-semibold text-foreground">NIF:</span> {client.nif}
                   </div>
                 )}
               </CardContent>

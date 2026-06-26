@@ -112,52 +112,52 @@ export function Knowledge() {
   return (
     <div className="space-y-8 py-8 max-w-5xl mx-auto px-4 md:px-8">
       {/* Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-hairline pb-6">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-border pb-6">
         <div>
-          <span className="text-xs font-semibold tracking-widest text-muted-custom uppercase">Business Wiki</span>
-          <h1 className="text-3xl font-normal tracking-tight text-ink mt-1">Knowledge Articles</h1>
-          <p className="text-sm text-body-text mt-1">Create business guidelines and references used by the AI co-pilot before web search.</p>
+          <span className="text-xs font-semibold tracking-widest text-muted-foreground uppercase">Business Wiki</span>
+          <h1 className="text-3xl font-normal tracking-tight text-foreground mt-1">Knowledge Articles</h1>
+          <p className="text-sm text-muted-foreground mt-1">Create business guidelines and references used by the AI co-pilot before web search.</p>
         </div>
 
         <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
           <DialogTrigger className="rounded-lg bg-primary text-primary-foreground hover:bg-primary-active h-10 px-4 gap-2 text-sm flex items-center justify-center font-medium cursor-pointer">
             <Plus className="h-4 w-4" /> Add Article
           </DialogTrigger>
-          <DialogContent className="sm:max-w-lg bg-canvas">
+          <DialogContent className="sm:max-w-lg bg-background">
             <DialogHeader>
-              <DialogTitle className="text-xl font-normal tracking-tight text-ink">Add Knowledge Article</DialogTitle>
+              <DialogTitle className="text-xl font-normal tracking-tight text-foreground">Add Knowledge Article</DialogTitle>
             </DialogHeader>
             <form onSubmit={handleCreateSubmit} className="space-y-4 pt-2">
               <div className="space-y-1">
-                <label className="text-xs uppercase font-medium text-muted-custom">Article Title</label>
+                <label className="text-xs uppercase font-medium text-muted-foreground">Article Title</label>
                 <Input
                   required
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="e.g. My bank coordinates & payment accounts"
-                  className="border-hairline h-10"
+                  className="border-border h-10"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs uppercase font-medium text-muted-custom">Content (Detailed Markdown/Text)</label>
+                <label className="text-xs uppercase font-medium text-muted-foreground">Content (Detailed Markdown/Text)</label>
                 <textarea
                   required
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
                   placeholder="Write detailed guidelines..."
                   rows={6}
-                  className="w-full text-sm p-3 bg-canvas border border-hairline rounded-md focus:outline-none focus:border-ink resize-none"
+                  className="w-full text-sm p-3 bg-background border border-border rounded-md focus:outline-none focus:border-ink resize-none"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs uppercase font-medium text-muted-custom">Tags (Comma-separated)</label>
+                <label className="text-xs uppercase font-medium text-muted-foreground">Tags (Comma-separated)</label>
                 <Input
                   value={tags}
                   onChange={(e) => setTags(e.target.value)}
                   placeholder="e.g. bank, ccp, payments"
-                  className="border-hairline h-10"
+                  className="border-border h-10"
                 />
               </div>
 
@@ -177,12 +177,12 @@ export function Knowledge() {
 
       {/* Search */}
       <div className="relative">
-        <Search className="absolute left-3 top-3 h-4 w-4 text-muted-custom" />
+        <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
         <Input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search articles..."
-          className="pl-9 border-hairline h-10 bg-canvas"
+          className="pl-9 border-border h-10 bg-background"
         />
       </div>
 
@@ -193,22 +193,22 @@ export function Knowledge() {
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-ink mx-auto"></div>
           </div>
         ) : articles.length === 0 ? (
-          <div className="text-center py-8 text-sm text-muted-custom border border-dashed border-hairline rounded-lg p-12 bg-canvas">
+          <div className="text-center py-8 text-sm text-muted-foreground border border-dashed border-border rounded-lg p-12 bg-background">
             No articles found. Add custom payment terms or business guidelines to assist the AI.
           </div>
         ) : (
           articles.map((art: any) => (
-            <Card key={art.id} className="rounded-lg border border-hairline shadow-none bg-canvas">
+            <Card key={art.id} className="rounded-lg border border-border shadow-none bg-background">
               <CardContent className="p-6 space-y-4">
                 <div className="flex justify-between items-start">
                   <div className="flex gap-2.5 items-start">
-                    <BookOpen className="h-5 w-5 text-signature-coral shrink-0 mt-0.5" />
+                    <BookOpen className="h-5 w-5 text-destructive shrink-0 mt-0.5" />
                     <div>
-                      <h3 className="font-semibold text-ink text-base tracking-tight">{art.title}</h3>
+                      <h3 className="font-semibold text-foreground text-base tracking-tight">{art.title}</h3>
                       {art.tags && (
                         <div className="flex flex-wrap gap-1 mt-1.5">
                           {art.tags.split(',').map((tag: string, idx: number) => (
-                            <span key={idx} className="inline-flex items-center gap-0.5 text-[9px] font-semibold uppercase px-2 py-0.5 rounded bg-surface-soft text-muted-custom border border-hairline">
+                            <span key={idx} className="inline-flex items-center gap-0.5 text-[9px] font-semibold uppercase px-2 py-0.5 rounded bg-muted text-muted-foreground border border-border">
                               <Tag className="h-2 w-2" /> {tag.trim()}
                             </span>
                           ))}
@@ -222,7 +222,7 @@ export function Knowledge() {
                       size="icon"
                       variant="ghost"
                       onClick={() => openEdit(art)}
-                      className="h-8 w-8 text-muted-custom hover:text-ink hover:bg-surface-soft"
+                      className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-muted"
                     >
                       <Edit className="h-4 w-4" />
                     </Button>
@@ -230,14 +230,14 @@ export function Knowledge() {
                       size="icon"
                       variant="ghost"
                       onClick={() => deleteMutation.mutate(art.id)}
-                      className="h-8 w-8 text-muted-custom hover:text-destructive hover:bg-destructive/10"
+                      className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
                     >
                       <Trash className="h-4 w-4" />
                     </Button>
                   </div>
                 </div>
 
-                <div className="text-sm text-body-text whitespace-pre-line leading-relaxed pt-2 border-t border-hairline/60">
+                <div className="text-sm text-muted-foreground whitespace-pre-line leading-relaxed pt-2 border-t border-border/60">
                   {art.content}
                 </div>
               </CardContent>
@@ -248,39 +248,39 @@ export function Knowledge() {
 
       {/* Edit Dialog */}
       <Dialog open={!!editingArticle} onOpenChange={(open) => !open && setEditingArticle(null)}>
-        <DialogContent className="sm:max-w-lg bg-canvas">
+        <DialogContent className="sm:max-w-lg bg-background">
           <DialogHeader>
-            <DialogTitle className="text-xl font-normal tracking-tight text-ink">Edit Article</DialogTitle>
+            <DialogTitle className="text-xl font-normal tracking-tight text-foreground">Edit Article</DialogTitle>
           </DialogHeader>
           {editingArticle && (
             <form onSubmit={handleEditSubmit} className="space-y-4 pt-2">
               <div className="space-y-1">
-                <label className="text-xs uppercase font-medium text-muted-custom">Article Title</label>
+                <label className="text-xs uppercase font-medium text-muted-foreground">Article Title</label>
                 <Input
                   required
                   value={editingArticle.title}
                   onChange={(e) => setEditingArticle({ ...editingArticle, title: e.target.value })}
-                  className="border-hairline h-10"
+                  className="border-border h-10"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs uppercase font-medium text-muted-custom">Content</label>
+                <label className="text-xs uppercase font-medium text-muted-foreground">Content</label>
                 <textarea
                   required
                   value={editingArticle.content}
                   onChange={(e) => setEditingArticle({ ...editingArticle, content: e.target.value })}
                   rows={6}
-                  className="w-full text-sm p-3 bg-canvas border border-hairline rounded-md focus:outline-none focus:border-ink resize-none"
+                  className="w-full text-sm p-3 bg-background border border-border rounded-md focus:outline-none focus:border-ink resize-none"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs uppercase font-medium text-muted-custom">Tags</label>
+                <label className="text-xs uppercase font-medium text-muted-foreground">Tags</label>
                 <Input
                   value={editingArticle.tags || ''}
                   onChange={(e) => setEditingArticle({ ...editingArticle, tags: e.target.value })}
-                  className="border-hairline h-10"
+                  className="border-border h-10"
                 />
               </div>
 

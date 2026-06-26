@@ -66,78 +66,78 @@ export function Dashboard({ onNavigate }: DashboardProps) {
   return (
     <div className="space-y-12 py-8 max-w-5xl mx-auto px-4 md:px-8">
       {/* Editorial Header */}
-      <div className="border-b border-hairline pb-6 flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
+      <div className="border-b border-border pb-6 flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
         <div>
-          <span className="text-xs font-semibold tracking-widest text-muted-custom uppercase">OPERATING DESK</span>
-          <h1 className="text-3xl font-normal tracking-tight text-ink mt-1">
+          <span className="text-xs font-semibold tracking-widest text-muted-foreground uppercase">OPERATING DESK</span>
+          <h1 className="text-3xl font-normal tracking-tight text-foreground mt-1">
             Welcome back, {settings?.businessName || 'Auto Entrepreneur'}
           </h1>
-          <p className="text-sm text-body-text mt-1">
+          <p className="text-sm text-muted-foreground mt-1">
             Manage your Algerian Auto Entrepreneur registry, billing, and social security.
           </p>
         </div>
-        <div className="text-sm bg-surface-soft border border-hairline p-3 rounded-md text-body-text flex items-center gap-2">
-          <Landmark className="h-4 w-4 text-ink" />
-          <span className="font-medium text-ink">NIF:</span>
+        <div className="text-sm bg-muted border border-border p-3 rounded-md text-muted-foreground flex items-center gap-2">
+          <Landmark className="h-4 w-4 text-foreground" />
+          <span className="font-medium text-foreground">NIF:</span>
           <span>{settings?.nif || 'No NIF set'}</span>
         </div>
       </div>
 
       {/* Airtable Design Style: 4-Column Flat KPI grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card className="rounded-lg border border-hairline bg-canvas shadow-none">
+        <Card className="rounded-lg border border-border bg-background shadow-none">
           <CardContent className="p-6">
             <div className="flex justify-between items-start">
-              <span className="text-xs uppercase font-medium tracking-wider text-muted-custom">Total Revenue</span>
+              <span className="text-xs uppercase font-medium tracking-wider text-muted-foreground">Total Revenue</span>
               <div className="p-1 bg-success/10 rounded">
                 <ArrowUpRight className="h-4 w-4 text-success" />
               </div>
             </div>
             <div className="mt-4">
-              <h3 className="text-2xl font-normal tracking-tight text-ink">
+              <h3 className="text-2xl font-normal tracking-tight text-foreground">
                 {totalRevenue.toLocaleString()} <span className="text-sm font-medium">DZD</span>
               </h3>
-              <p className="text-xs text-muted-custom mt-1">Algerian Dinars (inflow)</p>
+              <p className="text-xs text-muted-foreground mt-1">Algerian Dinars (inflow)</p>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="rounded-lg border border-hairline bg-canvas shadow-none">
+        <Card className="rounded-lg border border-border bg-background shadow-none">
           <CardContent className="p-6">
             <div className="flex justify-between items-start">
-              <span className="text-xs uppercase font-medium tracking-wider text-muted-custom">Total Expenses</span>
+              <span className="text-xs uppercase font-medium tracking-wider text-muted-foreground">Total Expenses</span>
               <div className="p-1 bg-destructive/10 rounded">
                 <ArrowDownRight className="h-4 w-4 text-destructive" />
               </div>
             </div>
             <div className="mt-4">
-              <h3 className="text-2xl font-normal tracking-tight text-ink">
+              <h3 className="text-2xl font-normal tracking-tight text-foreground">
                 {totalExpenses.toLocaleString()} <span className="text-sm font-medium">DZD</span>
               </h3>
-              <p className="text-xs text-muted-custom mt-1">Incurred business costs</p>
+              <p className="text-xs text-muted-foreground mt-1">Incurred business costs</p>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="rounded-lg border border-hairline bg-canvas shadow-none">
+        <Card className="rounded-lg border border-border bg-background shadow-none">
           <CardContent className="p-6">
             <div className="flex justify-between items-start">
-              <span className="text-xs uppercase font-medium tracking-wider text-muted-custom">Net Profit</span>
-              <div className="p-1 bg-ink/10 rounded">
-                <Wallet className="h-4 w-4 text-ink" />
+              <span className="text-xs uppercase font-medium tracking-wider text-muted-foreground">Net Profit</span>
+              <div className="p-1 bg-foreground/10 rounded">
+                <Wallet className="h-4 w-4 text-foreground" />
               </div>
             </div>
             <div className="mt-4">
-              <h3 className="text-2xl font-normal tracking-tight text-ink">
+              <h3 className="text-2xl font-normal tracking-tight text-foreground">
                 {netProfit.toLocaleString()} <span className="text-sm font-medium">DZD</span>
               </h3>
-              <p className="text-xs text-muted-custom mt-1">Net earnings before taxes</p>
+              <p className="text-xs text-muted-foreground mt-1">Net earnings before taxes</p>
             </div>
           </CardContent>
         </Card>
 
         {/* Estimated tax card using Airtable Forest/Coral signature card style */}
-        <Card className="rounded-lg border-none bg-signature-forest text-white shadow-none">
+        <Card className="rounded-lg border-none bg-green-500/10 text-white shadow-none">
           <CardContent className="p-6 flex flex-col justify-between h-full">
             <div>
               <span className="text-xs uppercase font-medium tracking-wider opacity-80">Estimated Tax (0.5%)</span>
@@ -163,7 +163,7 @@ export function Dashboard({ onNavigate }: DashboardProps) {
           <div className="flex gap-3 mt-6">
             <button
               onClick={() => onNavigate('invoices')}
-              className="px-4 py-2.5 bg-white text-ink text-sm font-medium rounded-lg hover:bg-slate-100 transition"
+              className="px-4 py-2.5 bg-white text-foreground text-sm font-medium rounded-lg hover:bg-slate-100 transition"
             >
               Generate Invoice
             </button>
@@ -177,17 +177,17 @@ export function Dashboard({ onNavigate }: DashboardProps) {
         </div>
 
         {/* Cream social security callout card */}
-        <div className="bg-signature-cream text-ink p-8 rounded-lg flex flex-col justify-between">
+        <div className="bg-accent/50 text-foreground p-8 rounded-lg flex flex-col justify-between">
           <div className="space-y-2">
-            <span className="text-xs uppercase font-semibold tracking-wider text-signature-coral">CASNOS ALERT</span>
+            <span className="text-xs uppercase font-semibold tracking-wider text-destructive">CASNOS ALERT</span>
             <h3 className="text-lg font-medium">Social Security Deadline</h3>
-            <p className="text-xs text-body-text leading-relaxed">
+            <p className="text-xs text-muted-foreground leading-relaxed">
               Auto Entrepreneurs must declare and settle their annual CASNOS contributions by July 31st to avoid penalties.
             </p>
           </div>
           <button
             onClick={() => onNavigate('calendar')}
-            className="w-full mt-6 py-2.5 bg-ink text-white text-xs font-semibold rounded-lg hover:bg-primary-active transition text-center uppercase tracking-wider"
+            className="w-full mt-6 py-2.5 bg-foreground text-white text-xs font-semibold rounded-lg hover:bg-primary-active transition text-center uppercase tracking-wider"
           >
             Review Calendar
           </button>
@@ -198,7 +198,7 @@ export function Dashboard({ onNavigate }: DashboardProps) {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4">
         {/* Recent Transactions */}
         <div className="space-y-4">
-          <h2 className="text-lg font-medium text-ink uppercase tracking-tight flex items-center justify-between">
+          <h2 className="text-lg font-medium text-foreground uppercase tracking-tight flex items-center justify-between">
             <span>Recent Activity</span>
             <button
               onClick={() => onNavigate('transactions')}
@@ -208,21 +208,21 @@ export function Dashboard({ onNavigate }: DashboardProps) {
             </button>
           </h2>
 
-          <div className="border border-hairline rounded-lg divide-y divide-hairline bg-canvas overflow-hidden">
+          <div className="border border-border rounded-lg divide-y divide-hairline bg-background overflow-hidden">
             {transactions?.length === 0 ? (
-              <div className="p-6 text-center text-sm text-muted-custom">No recent activity. Ask the AI assistant to record a transaction!</div>
+              <div className="p-6 text-center text-sm text-muted-foreground">No recent activity. Ask the AI assistant to record a transaction!</div>
             ) : (
               transactions?.map((tx: any) => (
-                <div key={tx.id} className="p-4 flex justify-between items-center bg-canvas">
+                <div key={tx.id} className="p-4 flex justify-between items-center bg-background">
                   <div>
-                    <h4 className="text-sm font-medium text-ink">{tx.description}</h4>
-                    <span className="text-xs text-muted-custom">
+                    <h4 className="text-sm font-medium text-foreground">{tx.description}</h4>
+                    <span className="text-xs text-muted-foreground">
                       {tx.category} • {format(new Date(tx.date), 'MMM dd, yyyy')}
                     </span>
                   </div>
                   <span
                     className={`text-sm font-semibold ${
-                      tx.type === 'REVENUE' ? 'text-success' : 'text-ink'
+                      tx.type === 'REVENUE' ? 'text-success' : 'text-foreground'
                     }`}
                   >
                     {tx.type === 'REVENUE' ? '+' : '-'} {tx.amount.toLocaleString()} DA
@@ -235,7 +235,7 @@ export function Dashboard({ onNavigate }: DashboardProps) {
 
         {/* Deadlines & Reminders */}
         <div className="space-y-4">
-          <h2 className="text-lg font-medium text-ink uppercase tracking-tight flex items-center justify-between">
+          <h2 className="text-lg font-medium text-foreground uppercase tracking-tight flex items-center justify-between">
             <span>Upcoming Deadlines</span>
             <button
               onClick={() => onNavigate('calendar')}
@@ -245,20 +245,20 @@ export function Dashboard({ onNavigate }: DashboardProps) {
             </button>
           </h2>
 
-          <div className="border border-hairline rounded-lg divide-y divide-hairline bg-canvas overflow-hidden">
+          <div className="border border-border rounded-lg divide-y divide-hairline bg-background overflow-hidden">
             {reminders?.length === 0 ? (
-              <div className="p-6 text-center text-sm text-muted-custom">No upcoming deadlines.</div>
+              <div className="p-6 text-center text-sm text-muted-foreground">No upcoming deadlines.</div>
             ) : (
               reminders?.map((reminder: any) => (
-                <div key={reminder.id} className="p-4 flex gap-3 items-start bg-canvas">
-                  <Calendar className="h-5 w-5 text-signature-coral shrink-0 mt-0.5" />
+                <div key={reminder.id} className="p-4 flex gap-3 items-start bg-background">
+                  <Calendar className="h-5 w-5 text-destructive shrink-0 mt-0.5" />
                   <div>
-                    <h4 className="text-sm font-medium text-ink">{reminder.title}</h4>
-                    <p className="text-xs text-muted-custom mt-0.5">
+                    <h4 className="text-sm font-medium text-foreground">{reminder.title}</h4>
+                    <p className="text-xs text-muted-foreground mt-0.5">
                       Due: {format(new Date(reminder.date), 'MMMM dd, yyyy')}
                     </p>
                     {reminder.description && (
-                      <p className="text-xs text-body-text mt-1">{reminder.description}</p>
+                      <p className="text-xs text-muted-foreground mt-1">{reminder.description}</p>
                     )}
                   </div>
                 </div>

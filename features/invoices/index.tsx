@@ -168,11 +168,11 @@ export function Invoices() {
     return (
       <div className="py-8 max-w-4xl mx-auto px-4 md:px-8 space-y-6 print:p-0 print:m-0 print:max-w-full">
         {/* Back navigation & Actions (hidden during print) */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-hairline pb-6 print:hidden">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-border pb-6 print:hidden">
           <Button
             onClick={() => setSelectedInvoice(null)}
             variant="ghost"
-            className="rounded-lg text-sm text-ink h-10 gap-2 px-3"
+            className="rounded-lg text-sm text-foreground h-10 gap-2 px-3"
           >
             <ChevronLeft className="h-4 w-4" /> Back to Invoices
           </Button>
@@ -208,99 +208,99 @@ export function Invoices() {
         </div>
 
         {/* Printable Card Area */}
-        <Card className="rounded-lg border border-hairline bg-canvas shadow-none p-8 md:p-12 print:border-none print:shadow-none print:p-0 print:text-black">
+        <Card className="rounded-lg border border-border bg-background shadow-none p-8 md:p-12 print:border-none print:shadow-none print:p-0 print:text-black">
           <div dir={dir} className="space-y-12">
             {/* Top Header: Business Logo and Title */}
-            <div className="flex flex-col sm:flex-row justify-between items-start gap-8 border-b border-hairline pb-8">
+            <div className="flex flex-col sm:flex-row justify-between items-start gap-8 border-b border-border pb-8">
               <div className="space-y-3">
-                <h1 className="text-2xl font-semibold tracking-tight text-ink uppercase print:text-black">
+                <h1 className="text-2xl font-semibold tracking-tight text-foreground uppercase print:text-black">
                   {isArabic ? 'فاتورة' : isBilingual ? 'FACTURE / فاتورة' : 'FACTURE'}
                 </h1>
-                <p className="text-sm font-medium text-muted-custom">
+                <p className="text-sm font-medium text-muted-foreground">
                   {isArabic ? 'رقم الفاتورة: ' : isBilingual ? 'N° Facture / رقم: ' : 'Invoice No: '}
-                  <span className="text-ink font-semibold">{selectedInvoice.invoiceNumber}</span>
+                  <span className="text-foreground font-semibold">{selectedInvoice.invoiceNumber}</span>
                 </p>
-                <p className="text-xs text-muted-custom">
+                <p className="text-xs text-muted-foreground">
                   {isArabic ? 'تاريخ الإصدار: ' : isBilingual ? 'Date / تاريخ: ' : 'Date: '}
                   {format(new Date(selectedInvoice.date), 'yyyy-MM-dd')}
                 </p>
-                <p className="text-xs text-muted-custom">
+                <p className="text-xs text-muted-foreground">
                   {isArabic ? 'تاريخ الاستحقاق: ' : isBilingual ? 'Échéance / استحقاق: ' : 'Due Date: '}
-                  <span className="font-medium text-ink">{format(new Date(selectedInvoice.dueDate), 'yyyy-MM-dd')}</span>
+                  <span className="font-medium text-foreground">{format(new Date(selectedInvoice.dueDate), 'yyyy-MM-dd')}</span>
                 </p>
               </div>
 
               {/* Business details */}
-              <div className="text-right print:text-right space-y-1 text-sm text-body-text max-w-xs">
-                <h3 className="font-semibold text-ink text-base">{settings?.businessName || 'Zestra User'}</h3>
+              <div className="text-right print:text-right space-y-1 text-sm text-muted-foreground max-w-xs">
+                <h3 className="font-semibold text-foreground text-base">{settings?.businessName || 'Zestra User'}</h3>
                 <p>{settings?.address}</p>
                 <p>{settings?.phone}</p>
                 <p>{settings?.email}</p>
-                <p className="text-xs mt-2 border-t border-hairline/60 pt-2">
-                  <span className="font-medium text-ink">NIF:</span> {settings?.nif}
+                <p className="text-xs mt-2 border-t border-border/60 pt-2">
+                  <span className="font-medium text-foreground">NIF:</span> {settings?.nif}
                 </p>
                 <p className="text-xs">
-                  <span className="font-medium text-ink">Auto-Entrepreneur N°:</span> {settings?.autoEntrepreneurNumber}
+                  <span className="font-medium text-foreground">Auto-Entrepreneur N°:</span> {settings?.autoEntrepreneurNumber}
                 </p>
               </div>
             </div>
 
             {/* Client Info block */}
-            <div className="p-4 bg-surface-soft border border-hairline rounded-lg grid grid-cols-1 sm:grid-cols-2 gap-6 text-sm">
+            <div className="p-4 bg-muted border border-border rounded-lg grid grid-cols-1 sm:grid-cols-2 gap-6 text-sm">
               <div>
-                <h4 className="font-semibold text-ink uppercase text-xs tracking-wider mb-2">
+                <h4 className="font-semibold text-foreground uppercase text-xs tracking-wider mb-2">
                   {isArabic ? 'موجه إلى' : isBilingual ? 'CLIENT / العميل' : 'BILL TO'}
                 </h4>
-                <p className="font-medium text-ink text-base">{selectedInvoice.client.name}</p>
-                <p className="text-muted-custom mt-1">{selectedInvoice.client.address}</p>
+                <p className="font-medium text-foreground text-base">{selectedInvoice.client.name}</p>
+                <p className="text-muted-foreground mt-1">{selectedInvoice.client.address}</p>
               </div>
               <div className="space-y-1 text-xs">
                 {selectedInvoice.client.nif && (
                   <p>
-                    <span className="font-semibold text-ink">NIF:</span> {selectedInvoice.client.nif}
+                    <span className="font-semibold text-foreground">NIF:</span> {selectedInvoice.client.nif}
                   </p>
                 )}
                 {selectedInvoice.client.email && (
                   <p>
-                    <span className="font-semibold text-ink">Email:</span> {selectedInvoice.client.email}
+                    <span className="font-semibold text-foreground">Email:</span> {selectedInvoice.client.email}
                   </p>
                 )}
                 {selectedInvoice.client.phone && (
                   <p>
-                    <span className="font-semibold text-ink">Phone:</span> {selectedInvoice.client.phone}
+                    <span className="font-semibold text-foreground">Phone:</span> {selectedInvoice.client.phone}
                   </p>
                 )}
               </div>
             </div>
 
             {/* Items Table */}
-            <div className="border border-hairline rounded-lg overflow-hidden">
+            <div className="border border-border rounded-lg overflow-hidden">
               <Table>
-                <TableHeader className="bg-surface-soft">
-                  <TableRow className="border-hairline">
-                    <TableHead className="text-xs uppercase font-medium text-muted-custom py-3">
+                <TableHeader className="bg-muted">
+                  <TableRow className="border-border">
+                    <TableHead className="text-xs uppercase font-medium text-muted-foreground py-3">
                       {isArabic ? 'الوصف' : isBilingual ? 'Description / الوصف' : 'Description'}
                     </TableHead>
-                    <TableHead className="text-xs uppercase font-medium text-muted-custom py-3 text-center w-24">
+                    <TableHead className="text-xs uppercase font-medium text-muted-foreground py-3 text-center w-24">
                       {isArabic ? 'الكمية' : isBilingual ? 'Qté / الكمية' : 'Qty'}
                     </TableHead>
-                    <TableHead className="text-xs uppercase font-medium text-muted-custom py-3 text-right w-36">
+                    <TableHead className="text-xs uppercase font-medium text-muted-foreground py-3 text-right w-36">
                       {isArabic ? 'سعر الوحدة' : isBilingual ? 'P.U. / السعر' : 'Unit Price'}
                     </TableHead>
-                    <TableHead className="text-xs uppercase font-medium text-muted-custom py-3 text-right w-40">
+                    <TableHead className="text-xs uppercase font-medium text-muted-foreground py-3 text-right w-40">
                       {isArabic ? 'المجموع' : isBilingual ? 'Total / المجموع' : 'Total'}
                     </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {selectedInvoice.items.map((item: any) => (
-                    <TableRow key={item.id} className="border-hairline">
-                      <TableCell className="text-sm font-medium text-ink py-4">{item.description}</TableCell>
-                      <TableCell className="text-sm text-body-text text-center py-4">{item.quantity}</TableCell>
-                      <TableCell className="text-sm text-body-text text-right py-4">
+                    <TableRow key={item.id} className="border-border">
+                      <TableCell className="text-sm font-medium text-foreground py-4">{item.description}</TableCell>
+                      <TableCell className="text-sm text-muted-foreground text-center py-4">{item.quantity}</TableCell>
+                      <TableCell className="text-sm text-muted-foreground text-right py-4">
                         {item.unitPrice.toLocaleString()} DA
                       </TableCell>
-                      <TableCell className="text-sm font-semibold text-ink text-right py-4">
+                      <TableCell className="text-sm font-semibold text-foreground text-right py-4">
                         {item.total.toLocaleString()} DA
                       </TableCell>
                     </TableRow>
@@ -311,24 +311,24 @@ export function Invoices() {
 
             {/* Subtotal & Totals block */}
             <div className="flex justify-end pt-4">
-              <div className="w-80 space-y-3 text-sm border-t border-hairline pt-4">
+              <div className="w-80 space-y-3 text-sm border-t border-border pt-4">
                 <div className="flex justify-between">
-                  <span className="text-muted-custom">
+                  <span className="text-muted-foreground">
                     {isArabic ? 'المجموع الفرعي' : isBilingual ? 'Sous-total / الفرعي' : 'Subtotal'}
                   </span>
-                  <span className="font-medium text-ink">{selectedInvoice.subtotal.toLocaleString()} DA</span>
+                  <span className="font-medium text-foreground">{selectedInvoice.subtotal.toLocaleString()} DA</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-custom">
+                  <span className="text-muted-foreground">
                     {isArabic ? 'الضريبة (0٪)' : isBilingual ? 'Taxe (0%) / الضريبة' : 'Tax (0%)'}
                   </span>
-                  <span className="font-medium text-ink">0.00 DA</span>
+                  <span className="font-medium text-foreground">0.00 DA</span>
                 </div>
-                <div className="flex justify-between text-base border-t border-hairline pt-3 font-semibold text-ink">
+                <div className="flex justify-between text-base border-t border-border pt-3 font-semibold text-foreground">
                   <span>
                     {isArabic ? 'الإجمالي الصافي' : isBilingual ? 'TOTAL NET / الإجمالي' : 'TOTAL NET'}
                   </span>
-                  <span className="text-lg text-signature-coral print:text-black">
+                  <span className="text-lg text-destructive print:text-black">
                     {selectedInvoice.total.toLocaleString()} DZD
                   </span>
                 </div>
@@ -337,8 +337,8 @@ export function Invoices() {
 
             {/* Custom Notes */}
             {selectedInvoice.notes && (
-              <div className="p-4 bg-surface-soft border border-hairline rounded-lg text-xs leading-relaxed text-body-text space-y-1">
-                <h5 className="font-semibold text-ink">
+              <div className="p-4 bg-muted border border-border rounded-lg text-xs leading-relaxed text-muted-foreground space-y-1">
+                <h5 className="font-semibold text-foreground">
                   {isArabic ? 'ملاحظات الدفع' : isBilingual ? 'CONDITIONS / ملاحظات' : 'PAYMENT TERMS'}
                 </h5>
                 <p className="whitespace-pre-line">{selectedInvoice.notes}</p>
@@ -353,30 +353,30 @@ export function Invoices() {
   return (
     <div className="space-y-8 py-8 max-w-5xl mx-auto px-4 md:px-8">
       {/* List Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-hairline pb-6">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-border pb-6">
         <div>
-          <span className="text-xs font-semibold tracking-widest text-muted-custom uppercase">Billing Desk</span>
-          <h1 className="text-3xl font-normal tracking-tight text-ink mt-1">Invoices</h1>
-          <p className="text-sm text-body-text mt-1">Generate bilingual commercial invoices for your services.</p>
+          <span className="text-xs font-semibold tracking-widest text-muted-foreground uppercase">Billing Desk</span>
+          <h1 className="text-3xl font-normal tracking-tight text-foreground mt-1">Invoices</h1>
+          <p className="text-sm text-muted-foreground mt-1">Generate bilingual commercial invoices for your services.</p>
         </div>
 
         <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
           <DialogTrigger className="rounded-lg bg-primary text-primary-foreground hover:bg-primary-active h-10 px-4 gap-2 text-sm flex items-center justify-center font-medium cursor-pointer">
             <Plus className="h-4 w-4" /> Create Invoice
           </DialogTrigger>
-          <DialogContent className="sm:max-w-2xl bg-canvas max-h-[85vh] overflow-y-auto">
+          <DialogContent className="sm:max-w-2xl bg-background max-h-[85vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle className="text-xl font-normal tracking-tight text-ink">Generate Invoice</DialogTitle>
+              <DialogTitle className="text-xl font-normal tracking-tight text-foreground">Generate Invoice</DialogTitle>
             </DialogHeader>
             <form onSubmit={handleCreateSubmit} className="space-y-6 pt-2">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <label className="text-xs uppercase font-medium text-muted-custom">Client CRM Record</label>
+                  <label className="text-xs uppercase font-medium text-muted-foreground">Client CRM Record</label>
                   <Select value={clientId} onValueChange={(val: any) => setClientId(val || '')} required>
-                    <SelectTrigger className="border-hairline h-10 bg-canvas text-ink">
+                    <SelectTrigger className="border-border h-10 bg-background text-foreground">
                       <SelectValue placeholder="Select Client" />
                     </SelectTrigger>
-                    <SelectContent className="bg-canvas">
+                    <SelectContent className="bg-background">
                       {clients.map((c: any) => (
                         <SelectItem key={c.id} value={c.id}>
                           {c.name}
@@ -387,12 +387,12 @@ export function Invoices() {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs uppercase font-medium text-muted-custom">Invoice Language</label>
+                  <label className="text-xs uppercase font-medium text-muted-foreground">Invoice Language</label>
                   <Select value={language} onValueChange={(val: any) => setLanguage(val)}>
-                    <SelectTrigger className="border-hairline h-10 bg-canvas text-ink">
+                    <SelectTrigger className="border-border h-10 bg-background text-foreground">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="bg-canvas">
+                    <SelectContent className="bg-background">
                       <SelectItem value="FR">French (LTR)</SelectItem>
                       <SelectItem value="AR">Arabic (RTL)</SelectItem>
                       <SelectItem value="BILINGUAL">Bilingual FR/AR (RTL)</SelectItem>
@@ -403,26 +403,26 @@ export function Invoices() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <label className="text-xs uppercase font-medium text-muted-custom">Due Date</label>
+                  <label className="text-xs uppercase font-medium text-muted-foreground">Due Date</label>
                   <Input
                     required
                     type="date"
                     value={dueDate}
                     onChange={(e) => setDueDate(e.target.value)}
-                    className="border-hairline h-10"
+                    className="border-border h-10"
                   />
                 </div>
               </div>
 
               {/* Items Section */}
               <div className="space-y-3">
-                <div className="flex justify-between items-center border-b border-hairline pb-2">
-                  <label className="text-xs uppercase font-semibold text-ink tracking-wider">Line Items</label>
+                <div className="flex justify-between items-center border-b border-border pb-2">
+                  <label className="text-xs uppercase font-semibold text-foreground tracking-wider">Line Items</label>
                   <Button
                     type="button"
                     onClick={handleAddItem}
                     variant="outline"
-                    className="h-8 text-xs gap-1 border-hairline bg-canvas"
+                    className="h-8 text-xs gap-1 border-border bg-background"
                   >
                     <Plus className="h-3 w-3" /> Add Item
                   </Button>
@@ -432,41 +432,41 @@ export function Invoices() {
                   {items.map((item, index) => (
                     <div key={index} className="flex gap-3 items-end">
                       <div className="flex-1 space-y-1">
-                        <label className="text-[10px] uppercase font-medium text-muted-custom">Description</label>
+                        <label className="text-[10px] uppercase font-medium text-muted-foreground">Description</label>
                         <Input
                           required
                           value={item.description}
                           onChange={(e) => handleItemChange(index, 'description', e.target.value)}
                           placeholder="Web development service"
-                          className="border-hairline h-9"
+                          className="border-border h-9"
                         />
                       </div>
                       <div className="w-16 space-y-1">
-                        <label className="text-[10px] uppercase font-medium text-muted-custom">Qty</label>
+                        <label className="text-[10px] uppercase font-medium text-muted-foreground">Qty</label>
                         <Input
                           required
                           type="number"
                           value={item.quantity}
                           onChange={(e) => handleItemChange(index, 'quantity', parseInt(e.target.value) || 1)}
-                          className="border-hairline h-9"
+                          className="border-border h-9"
                         />
                       </div>
                       <div className="w-32 space-y-1">
-                        <label className="text-[10px] uppercase font-medium text-muted-custom">Unit Price (DA)</label>
+                        <label className="text-[10px] uppercase font-medium text-muted-foreground">Unit Price (DA)</label>
                         <Input
                           required
                           type="number"
                           value={item.unitPrice || ''}
                           onChange={(e) => handleItemChange(index, 'unitPrice', parseFloat(e.target.value) || 0)}
                           placeholder="Price"
-                          className="border-hairline h-9"
+                          className="border-border h-9"
                         />
                       </div>
                       <Button
                         type="button"
                         onClick={() => handleRemoveItem(index)}
                         variant="ghost"
-                        className="h-9 w-9 text-muted-custom hover:text-destructive hover:bg-destructive/10 shrink-0"
+                        className="h-9 w-9 text-muted-foreground hover:text-destructive hover:bg-destructive/10 shrink-0"
                         disabled={items.length === 1}
                       >
                         <Trash className="h-4 w-4" />
@@ -478,13 +478,13 @@ export function Invoices() {
 
               {/* Notes */}
               <div className="space-y-1">
-                <label className="text-xs uppercase font-medium text-muted-custom">Invoice Notes (e.g., Bank details / IBAN)</label>
+                <label className="text-xs uppercase font-medium text-muted-foreground">Invoice Notes (e.g., Bank details / IBAN)</label>
                 <textarea
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   placeholder="Payment bank details, CCP, or terms of service..."
                   rows={2}
-                  className="w-full text-sm p-3 bg-canvas border border-hairline rounded-md focus:outline-none focus:border-ink resize-none"
+                  className="w-full text-sm p-3 bg-background border border-border rounded-md focus:outline-none focus:border-ink resize-none"
                 />
               </div>
 
@@ -505,22 +505,22 @@ export function Invoices() {
       {/* Filter panel */}
       <div className="flex flex-col md:flex-row gap-4">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-3 h-4 w-4 text-muted-custom" />
+          <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
           <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by invoice number or client..."
-            className="pl-9 border-hairline h-10 bg-canvas"
+            className="pl-9 border-border h-10 bg-background"
           />
         </div>
         <Select
           value={statusFilter}
           onValueChange={(val: any) => setStatusFilter(val)}
         >
-          <SelectTrigger className="w-full md:w-[180px] border-hairline h-10 bg-canvas text-ink">
+          <SelectTrigger className="w-full md:w-[180px] border-border h-10 bg-background text-foreground">
             <SelectValue placeholder="Filter status" />
           </SelectTrigger>
-          <SelectContent className="bg-canvas">
+          <SelectContent className="bg-background">
             <SelectItem value="ALL">All Statuses</SelectItem>
             <SelectItem value="DRAFT">Draft</SelectItem>
             <SelectItem value="SENT">Sent</SelectItem>
@@ -531,18 +531,18 @@ export function Invoices() {
       </div>
 
       {/* Table grid */}
-      <Card className="rounded-lg border border-hairline shadow-none overflow-hidden bg-canvas">
+      <Card className="rounded-lg border border-border shadow-none overflow-hidden bg-background">
         <CardContent className="p-0">
           <Table>
-            <TableHeader className="bg-surface-soft">
-              <TableRow className="border-hairline">
-                <TableHead className="text-xs uppercase font-medium text-muted-custom py-3">Invoice Number</TableHead>
-                <TableHead className="text-xs uppercase font-medium text-muted-custom py-3">Client</TableHead>
-                <TableHead className="text-xs uppercase font-medium text-muted-custom py-3">Issue Date</TableHead>
-                <TableHead className="text-xs uppercase font-medium text-muted-custom py-3">Due Date</TableHead>
-                <TableHead className="text-xs uppercase font-medium text-muted-custom py-3">Status</TableHead>
-                <TableHead className="text-xs uppercase font-medium text-muted-custom py-3 text-right">Total Net</TableHead>
-                <TableHead className="text-xs uppercase font-medium text-muted-custom py-3 text-center"></TableHead>
+            <TableHeader className="bg-muted">
+              <TableRow className="border-border">
+                <TableHead className="text-xs uppercase font-medium text-muted-foreground py-3">Invoice Number</TableHead>
+                <TableHead className="text-xs uppercase font-medium text-muted-foreground py-3">Client</TableHead>
+                <TableHead className="text-xs uppercase font-medium text-muted-foreground py-3">Issue Date</TableHead>
+                <TableHead className="text-xs uppercase font-medium text-muted-foreground py-3">Due Date</TableHead>
+                <TableHead className="text-xs uppercase font-medium text-muted-foreground py-3">Status</TableHead>
+                <TableHead className="text-xs uppercase font-medium text-muted-foreground py-3 text-right">Total Net</TableHead>
+                <TableHead className="text-xs uppercase font-medium text-muted-foreground py-3 text-center"></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -554,7 +554,7 @@ export function Invoices() {
                 </TableRow>
               ) : invoices.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center py-8 text-sm text-muted-custom">
+                  <TableCell colSpan={7} className="text-center py-8 text-sm text-muted-foreground">
                     No invoices found. Generate a client bill to get started.
                   </TableCell>
                 </TableRow>
@@ -562,18 +562,18 @@ export function Invoices() {
                 invoices.map((inv: any) => (
                   <TableRow
                     key={inv.id}
-                    className="border-hairline hover:bg-surface-soft/50 cursor-pointer"
+                    className="border-border hover:bg-muted/50 cursor-pointer"
                     onClick={() => setSelectedInvoice(inv)}
                   >
-                    <TableCell className="text-sm font-semibold text-ink py-4 flex items-center gap-2">
-                      <FileText className="h-4 w-4 text-muted-custom" />
+                    <TableCell className="text-sm font-semibold text-foreground py-4 flex items-center gap-2">
+                      <FileText className="h-4 w-4 text-muted-foreground" />
                       {inv.invoiceNumber}
                     </TableCell>
-                    <TableCell className="text-sm text-body-text py-4">{inv.client.name}</TableCell>
-                    <TableCell className="text-sm text-body-text py-4">
+                    <TableCell className="text-sm text-muted-foreground py-4">{inv.client.name}</TableCell>
+                    <TableCell className="text-sm text-muted-foreground py-4">
                       {format(new Date(inv.date), 'yyyy-MM-dd')}
                     </TableCell>
-                    <TableCell className="text-sm text-body-text py-4">
+                    <TableCell className="text-sm text-muted-foreground py-4">
                       {format(new Date(inv.dueDate), 'yyyy-MM-dd')}
                     </TableCell>
                     <TableCell className="py-4" onClick={(e) => e.stopPropagation()}>
@@ -589,12 +589,12 @@ export function Invoices() {
                               ? 'bg-blue-100 text-blue-800'
                               : inv.status === 'OVERDUE'
                               ? 'bg-destructive/10 text-destructive'
-                              : 'bg-muted text-muted-custom'
+                              : 'bg-muted text-muted-foreground'
                           }`}
                         >
                           <SelectValue />
                         </SelectTrigger>
-                        <SelectContent className="bg-canvas">
+                        <SelectContent className="bg-background">
                           <SelectItem value="DRAFT">Draft</SelectItem>
                           <SelectItem value="SENT">Sent</SelectItem>
                           <SelectItem value="PAID">Paid</SelectItem>
@@ -602,7 +602,7 @@ export function Invoices() {
                         </SelectContent>
                       </Select>
                     </TableCell>
-                    <TableCell className="text-sm font-semibold text-ink text-right py-4">
+                    <TableCell className="text-sm font-semibold text-foreground text-right py-4">
                       {inv.total.toLocaleString()} DA
                     </TableCell>
                     <TableCell className="text-center py-4">
@@ -613,7 +613,7 @@ export function Invoices() {
                           e.stopPropagation()
                           setSelectedInvoice(inv)
                         }}
-                        className="text-xs text-link font-medium hover:bg-surface-soft px-3 h-8"
+                        className="text-xs text-link font-medium hover:bg-muted px-3 h-8"
                       >
                         View
                       </Button>
